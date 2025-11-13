@@ -1,5 +1,6 @@
 package daily_schedule.daily_schedule_be.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -18,11 +19,15 @@ import java.time.LocalDateTime;
 @Setter
 public class ScheduleResult {
     @Id
-    private String dailyResultId; // daily_result_id (PK)
+    @Column(name = "daily_result_id")
+    private String dailyResultId; // (PK)
 
-    private LocalDateTime realStartTime; // real_start_time
-    private LocalDateTime realEndTime; // real_end_time
-    private boolean isFinished; // is_finished
+    @Column(name = "real_start_time")
+    private LocalDateTime realStartTime;
+    @Column(name = "real_end_time")
+    private LocalDateTime realEndTime;
+    @Column(name = "is_finished")
+    private boolean isFinished;
 
     //
 }
