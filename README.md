@@ -102,7 +102,7 @@
 ## 📝 개발 체크리스트
 
 -   [x] README 등록
--   [ ] Docker로 MySQL 실행
+-   [X] Docker로 MySQL 실행
 -   [ ] `application.yml` 설정 (JPA `ddl-auto: update` 설정)
 -   [ ] DTO 코드 작성 (Request/Response DTO)
 -   [ ] Entity 코드 작성 (`Tomorrow.java`)
