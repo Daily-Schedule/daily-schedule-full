@@ -104,7 +104,7 @@
 -   [x] README 등록
 -   [X] Docker로 MySQL 실행
 -   [X] `application.yml` 설정 (JPA `ddl-auto: update` 설정)
--   [ ] DTO 코드 작성 (Request/Response DTO)
+-   [X] DTO 코드 작성 (Request/Response DTO)
 -   [ ] Entity 코드 작성 (`Tomorrow.java`)
 -   [ ] Repository 코드 작성 (`TomorrowRepository.java`)
 -   [ ] Service 코드 작성 (`TomorrowService.java` - CRUD 로직)
