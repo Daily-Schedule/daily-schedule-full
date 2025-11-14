@@ -118,7 +118,7 @@
 -   [X] `application.yml` 설정 (JPA `ddl-auto: update` 설정)
 -   [X] DTO 코드 작성 (Request/Response DTO)
 -   [X] Entity 코드 작성 (`Schedule.java`)
--   [ ] Repository 코드 작성 (`SchedulesRepository.java`)
+-   [X] Repository 코드 작성 (`SchedulesRepository.java`)
 -   [ ] Service 코드 작성 (SchedulesService.java` - CRUD 로직)
 -   [ ] Controller 코드 작성 (`SchedulesController.java` - CRUD API)
 -   [ ] Postman API 테스트 (CRUD 4개 기능 모두)
