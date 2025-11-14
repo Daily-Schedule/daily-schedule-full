@@ -22,7 +22,7 @@ public class SchedulesResponseDto {
         this.userId = schedule.getUserId();
         this.startTime = schedule.getStartTime();
         this.endTime = schedule.getEndTime();
-        this.scheduleResultId = schedule.getScheduleResultId;
+        this.scheduleResultId = schedule.getScheduleResultId();
         this.content = schedule.getContent();
         this.createdAt = schedule.getCreatedAt();
         this.updatedAt = schedule.getUpdatedAt();
