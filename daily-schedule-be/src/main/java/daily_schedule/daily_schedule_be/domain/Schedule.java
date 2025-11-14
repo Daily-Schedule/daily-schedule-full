@@ -1,11 +1,13 @@
 package daily_schedule.daily_schedule_be.domain;
 
+import daily_schedule.daily_schedule_be.dto.request.SchedulesRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.date.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 // @Entity: JPA에게 해당 클래스가 DB 테이블과 매핑된다고 알리는 어노테이션
@@ -44,14 +46,21 @@ public class Schedule {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @CreateDate
-    @Column(updatable = true)
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     // DTO를 받아서 Entity를 생성하는 생성자
-    public Schedule(LocalDateTime startTime, LocalDateTime endTime, String content) {
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.content = content;
+    public Schedule(SchedulesRequestDto requestDto, String userId, Long scheduleResultId) {
+        this.userId = userId;
+        this.scheduleResultId = scheduleResultId;
+        this.startTime = requestDto.getStartTime();
+        this.endTime = requestDto.getEndTime();
+        this.content = requestDto.getContent();
+    }
+
+    public void update(SchedulesRequestDto requestDto) {
+        this.startTime = requestDto.getStartTime();
+        this.endTime = requestDto.getEndTime();
+        this.content = requestDto.getContent();
     }
 }
