@@ -69,4 +69,18 @@ public class TodayScheduleController {
 
         return ResponseEntity.ok("일정이 시작되었습니다.");
     }
+
+    /**
+     * 특정 일정의 '종료'를 기록하는 API (PATCH /api/schedules/{scheduleId}/end)
+     *
+     * @param scheduleId (입력) URL 경로에서 추출한 일정의 고유 ID
+     * @return "일정이 종료되었습니다." 라는 성공 메시지를 포함한 {@link ResponseEntity}
+     */
+    @PatchMapping("/{scheduleId}/end")
+    public ResponseEntity<String> endSchedule(@PathVariable Long scheduleId) {
+        // Service에게 "이 ID의 일정을 '종료' 처리 해주십쇼"라고 시킴
+        todayScheduleService.endSchedule(scheduleId);
+
+        return ResponseEntity.ok(" 일정이 종료되었습니다.");
+    }
 }
