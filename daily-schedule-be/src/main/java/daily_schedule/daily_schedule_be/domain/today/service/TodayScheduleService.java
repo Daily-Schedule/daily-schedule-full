@@ -80,4 +80,28 @@ public class TodayScheduleService {
         scheduleResultRepository.save(result);
     }
 
+    /**
+     * '특정 일정 종료' 로직
+     *
+     * @param scheduleId (입력) 종료할 일정의 ID
+     */
+    @Transactional
+    public void endSchedule(Long scheduleId) {
+        // '계획' 엔티티를 탐색
+        TodaySchedule schedule = todayScheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("일정 없음"));
+
+        // '계획'에 연결된 '결과' 엔티티를 탐색
+        ScheduleResult result = schedule.getScheduleResultId();
+        if (result == null)
+            throw new IllegalStateException("일정에 결과 객체가 연결되지 " + "않았습니다.");
+
+        // '결과' 엔티티의 '실제 종료 시간' 필드에 '현재 시간'을 기록
+        result.setRealEndTime(LocalDateTime.now());
+        // '결과' 엔티티의 '완료 여부' 필드를 'true'로 기록
+        result.setFinished(true);
+
+        // '일정 결과' 레포지토리에게 변경사항 저장(UPDATE) 명령
+        scheduleResultRepository.save(result);
+    }
 }
