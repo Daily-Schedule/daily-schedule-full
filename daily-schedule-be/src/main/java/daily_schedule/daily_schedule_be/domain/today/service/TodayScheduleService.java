@@ -53,4 +53,31 @@ public class TodayScheduleService {
         // 현재는 빈 배열 반환 -> 추후 '일정 목록'이 반한됨
     }
 
+    /**
+     * '특정 일정 시작' 로직
+     *
+     * @param scheduleId (입력) 'Controller가 전달해준 "시작할 일정의 ID"
+     * @Transactional : 이 작업(메소드)은 하나의 '묶음(트랜잭션)'
+     * 중간에 실패하면 모든 변경사항이 '롤백(취소)'되어야 함을 보장
+     */
+    @Transactional
+    public void startSchedule(Long scheduleId) {
+        // scheduleId로 '오늘 일정(TodaySchedule)'을 찾는다
+        // domain의 @Id 필드명: scheduleResultId
+        TodaySchedule schedule = todayScheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("일정 없음"));
+
+        // 조회된 일정에서 '결과 ID'를 꺼낸다
+        // domain의 필드명: scheduleResultDailyResultId
+        ScheduleResult result = schedule.getScheduleResultId();
+        if (result == null)
+            throw new IllegalStateException("일정에 결과 ID가 연결되지 않았습니다.");
+
+        // '결과' 엔티티의 'realStartTime' 필드에 '현재 시간'을 기록(Setter)
+        result.setRealStartTime(LocalDateTime.now());
+
+        // 레포지토리에게 변경된 'result' 객체를 저장(UPDATE)
+        scheduleResultRepository.save(result);
+    }
+
 }
