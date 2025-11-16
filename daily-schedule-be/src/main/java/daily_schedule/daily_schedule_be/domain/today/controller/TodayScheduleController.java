@@ -55,4 +55,18 @@ public class TodayScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
+    /**
+     * 특정 일정의 '시작'을 기록하는 API (PATCH /api/schedules/{scheduleId}/start
+     *
+     * @param scheduleId (입력) URL 경로에서 추출한 일정의 고유 ID
+     * @return "일정이 시작되었습니다." 성공 메시지를 포함한 {@link ResponseEntity}
+     * @PathVariable : URL 경로의 일부(scheduleId)를 파라미터로 가져옴
+     */
+    @PatchMapping("/{scheduleId}/start")
+    public ResponseEntity<String> startSchedule(@PathVariable Long scheduleId) {
+        // Service에게 "이 ID의 일정을 '시작' 처리 해주십쇼"라고 시킴
+        todayScheduleService.startSchedule(scheduleId);
+
+        return ResponseEntity.ok("일정이 시작되었습니다.");
+    }
 }
