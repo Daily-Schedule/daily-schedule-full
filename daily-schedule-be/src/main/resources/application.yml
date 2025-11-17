@@ -7,9 +7,9 @@ spring:
 
   # Docker로 띄운 MySQL DB 정보
   datasource:
-    url: jdbc:mysql://localhost:3307/jaksim_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3307/jaksim_db
     username: root
-    password: 0000
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # JPA (Java Persistence API) 설정
