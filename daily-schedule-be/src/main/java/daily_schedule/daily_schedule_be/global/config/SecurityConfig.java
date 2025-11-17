@@ -1,15 +1,63 @@
 package daily_schedule.daily_schedule_be.global.config;
 
+import daily_schedule.daily_schedule_be.global.jwt.JwtFilter;
+import daily_schedule.daily_schedule_be.global.jwt.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfFilter;
 
 @Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtTokenProvider jwtProvider;
+
+    private final String[] allowedUrls = {
+            "/api/user/register",
+            "/api/user/login"
+    };
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, CsrfFilter csrfFilter) throws Exception {
+        JwtFilter jwtFilter = new JwtFilter(jwtProvider);
+
+        http
+                // 1. CSRF 비활성화 (POST 요청 허용을 위해 필수)
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // 2. 세션 비활성화 (JWT 사용 시 필수 설정)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // 폼 로그인 및 HTTP 기본 인증 비활성화 (API 서버의 기본 설정)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+
+                // 요청에 대한 접근 권한 설정
+                .authorizeHttpRequests(authorize -> authorize
+                        // 회원가입 및 로그인 경로는 인증 없이 허용 (permitAll)
+                        // /api/user/register, /api/user/login 경로는 POST 요청이므로 CSRF 비활성화가 필요함
+                        .requestMatchers(allowedUrls).permitAll()
+                        // 그 외 모든 요청은 인증 필요 (authenticated)
+                        .anyRequest().authenticated()
+                )
+                .addFilterAfter(csrfFilter, org.springframework.web.filter.CorsFilter.class)
+                .addFilterAfter(jwtFilter, CsrfFilter.class);
+
+        return http.build();
     }
 }
