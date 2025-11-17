@@ -31,7 +31,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CsrfFilter csrfFilter) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         JwtFilter jwtFilter = new JwtFilter(jwtProvider);
 
         http
@@ -55,7 +55,6 @@ public class SecurityConfig {
                         // 그 외 모든 요청은 인증 필요 (authenticated)
                         .anyRequest().authenticated()
                 )
-                .addFilterAfter(csrfFilter, org.springframework.web.filter.CorsFilter.class)
                 .addFilterAfter(jwtFilter, CsrfFilter.class);
 
         return http.build();
