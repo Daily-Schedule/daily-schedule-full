@@ -117,10 +117,10 @@
 -   [X] Docker로 MySQL 실행
 -   [X] `application.yml` 설정 (JPA `ddl-auto: update` 설정)
 -   [X] DTO 코드 작성 (Request/Response DTO)
--   [X] Entity 코드 작성 (`Schedule.java`)
--   [X] Repository 코드 작성 (`SchedulesRepository.java`)
--   [ ] Service 코드 작성 (SchedulesService.java` - CRUD 로직)
--   [ ] Controller 코드 작성 (`SchedulesController.java` - CRUD API)
+-   [X] Entity 코드 작성
+-   [X] Repository 코드 작성
+-   [X] Service 코드 작성
+-   [ ] Controller 코드 작성
 -   [ ] Postman API 테스트 (CRUD 4개 기능 모두)
 -   [ ] Postman Collection Export 및 공유
 -   [ ] 프론트엔드 CORS 문제 해결 (`@CrossOrigin` 설정)
