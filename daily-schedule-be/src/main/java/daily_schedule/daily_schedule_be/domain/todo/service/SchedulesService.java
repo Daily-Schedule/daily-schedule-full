@@ -30,9 +30,7 @@ public class SchedulesService {
     // 이 메서드 전체가 하나의 트랜잭션으로 동작
     // CREATE
     @Transactional
-    public SchedulesResponseDto createSchedule(SchedulesRequestDto requestDto) {
-        // 현재 로그인한 유저 ID (추후 변경 예정)
-        String userId = "yoon2013";
+    public SchedulesResponseDto createSchedule(String userId, SchedulesRequestDto requestDto) {
 
         // ID로 User 엔티티를 조회 (없으면 에러 발생)
         User user = userRepository.findById(userId).orElseThrow(

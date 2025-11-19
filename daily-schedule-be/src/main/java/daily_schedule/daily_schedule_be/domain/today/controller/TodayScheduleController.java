@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,12 +48,15 @@ public class TodayScheduleController {
      */
     @GetMapping
     public ResponseEntity<List<TodayScheduleResponseDto>> getSchedulesByDate(
-            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @AuthenticationPrincipal UserDetails userDetails)
+    {
 
-        // User tempUser = null; // (임시 - 실제 User 객체 주입 필요)
-        // 현재 임시로 User 객체 만들어 테스트 완료
-        User tempUser = userRepository.findById("test-user").orElseThrow(
-                () -> new IllegalArgumentException(("테스트 유저가 없습니다.")));
+        // User tempUser = null;
+        // TODO: 추후 User에 implements를 한다면 오버라이딩된 것으로 대체
+        String userId = userDetails.getUsername();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         // Service에게 "이 사용자의, 이 날짜의 일정 목록을 찾아주십쇼"라고 시킴
         // List<TodaySchedule> schedules =

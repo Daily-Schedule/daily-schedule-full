@@ -1,6 +1,8 @@
 package daily_schedule.daily_schedule_be.global.jwt;
 
 import jakarta.servlet.FilterChain;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -42,10 +45,14 @@ public class JwtFilter extends OncePerRequestFilter {
             // 3. 토큰에서 사용자 ID 추출
             String userId = jwtTokenProvider.getSubject(token);
 
+            List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+
+            UserDetails principal = new User(userId, "", authorities);
+
             // 4. Spring Security Authentication 객체 생성
             // 여기서는 권한을 'ROLE_USER'로 고정하고, 비밀번호는 null로 처리 (이미 토큰으로 인증되었기 때문)
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    userId, // Principal (사용자 ID)
+                    principal, // Principal (사용자 ID)
                     null,   // Credentials (비밀번호는 JWT 인증 방식에서는 필요 없음)
                     Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")) // 권한 부여
             );
