@@ -1,8 +1,10 @@
 package daily_schedule.daily_schedule_be.domain.today.controller;
 
+import daily_schedule.daily_schedule_be.domain.today.dto.response.TodayScheduleResponseDto;
 import daily_schedule.daily_schedule_be.domain.today.entity.TodaySchedule;
 import daily_schedule.daily_schedule_be.domain.today.service.TodayScheduleService;
 import daily_schedule.daily_schedule_be.domain.user.entity.User;
+import daily_schedule.daily_schedule_be.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * '오늘 일정' 관련 API 요청을 처리하는 컨트롤러
@@ -30,6 +33,7 @@ public class TodayScheduleController {
      * Controller는 Service를 알고 있어야(의존해야) 함
      */
     private final TodayScheduleService todayScheduleService;
+    private final UserRepository userRepository;
 
     /**
      * 특정 날짜의 일정 목록을 조회하는 API (GET /api/schedules?date=YYYY-MM-DD)
@@ -40,19 +44,26 @@ public class TodayScheduleController {
      * LocalDate 객체로 변환
      */
     @GetMapping
-    public ResponseEntity<List<TodaySchedule>> getSchedulesByDate(
+    public ResponseEntity<List<TodayScheduleResponseDto>> getSchedulesByDate(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        // @TODO 미나님 회원/인증 기능이 완성되면, 실제 로그인한 사용자 객체를 가져와 tempUser 자리에 삽입
 
-        User tempUser = null; // (임시 - 실제 User 객체 주입 필요)
+        // User tempUser = null; // (임시 - 실제 User 객체 주입 필요)
+        // 현재 임시로 User 객체 만들어 테스트 완료
+        User tempUser = userRepository.findById("test-user").orElseThrow(
+                () -> new IllegalArgumentException(("테스트 유저가 없습니다.")));
 
         // Service에게 "이 사용자의, 이 날짜의 일정 목록을 찾아주십쇼"라고 시킴
         List<TodaySchedule> schedules = todayScheduleService.getSchedulesByDate(
                 tempUser, date);
 
+        // 기존 엔티티 목록을 DTO 목록으로 변환
+        List<TodayScheduleResponseDto> response = schedules.stream()
+                .map(TodayScheduleResponseDto::from) // 하나씩 변환
+                .collect(Collectors.toList());
+
         // Service가 찾아온 '일정 목록'을 프론트엔드에게 성공(OK) 상태와 함께 반환
         // 현재는 DB에 데이터가 없어 빈 배열 반환!!
-        return ResponseEntity.ok(schedules);
+        return ResponseEntity.ok(response);
     }
 
     /**
