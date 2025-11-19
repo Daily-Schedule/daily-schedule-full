@@ -1,9 +1,10 @@
 package daily_schedule.daily_schedule_be.domain.today.service;
 
 import daily_schedule.daily_schedule_be.domain.today.entity.ScheduleResult;
-import daily_schedule.daily_schedule_be.domain.today.entity.TodaySchedule;
 import daily_schedule.daily_schedule_be.domain.today.repository.ScheduleResultRepository;
 import daily_schedule.daily_schedule_be.domain.today.repository.TodayScheduleRepository;
+import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
+import daily_schedule.daily_schedule_be.domain.todo.repository.SchedulesRepository;
 import daily_schedule.daily_schedule_be.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,8 @@ import java.util.List;
 public class TodayScheduleService {
 
     // 일정 계획을 관리하는 레포지토리
-    private final TodayScheduleRepository todayScheduleRepository;
+    // 통합된 레포지토리로 변경 (종근님 레포지토리)
+    private final SchedulesRepository schedulesRepository;
     // 일정 결과를 관리하는 레포지토리
     // 추후 API는 이 레포지토리를 통해 '결과'를 '저장(UPDATE)' 함
     private final ScheduleResultRepository scheduleResultRepository;
@@ -38,19 +40,20 @@ public class TodayScheduleService {
      *
      * @param user (입력) 조회할 사용자 (현재는 임시로 null)
      * @param date (입력) 조회할 날짜 (예: "2025-11-16")
-     * @return {@link TodaySchedule} (일정 계획) 엔티티의 목록
+     * @return {@link Schedule} (일정 계획) 엔티티의 목록
      */
     @Transactional(readOnly = true)
-    public List<TodaySchedule> getSchedulesByDate(User user, LocalDate date) {
+    public List<Schedule> getSchedulesByDate(User user, LocalDate date) {
         // 날짜(LocalDate)를 그날의 시작 시간과 끝 시간으로 변환
         // 00:00:00 ~ 23:59:59
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
         // Repository에 새로 만든 쿼리 메소드 호출
-        return todayScheduleRepository.findByUserAndStartTimeBetween(user,
+        // return todayScheduleRepository.findByUserAndStartTimeBetween(user,
+        // startOfDay, endOfDay);
+        return schedulesRepository.findAllByUserAndStartTimeBetween(user,
                 startOfDay, endOfDay);
-        // 현재는 빈 배열 반환 -> 추후 '일정 목록'이 반한됨
     }
 
     /**
@@ -64,12 +67,13 @@ public class TodayScheduleService {
     public void startSchedule(Long scheduleId) {
         // scheduleId로 '오늘 일정(TodaySchedule)'을 찾는다
         // domain의 @Id 필드명: scheduleResultId
-        TodaySchedule schedule = todayScheduleRepository.findById(scheduleId)
+        // TodaySchedule -> Schedule
+        Schedule schedule = schedulesRepository.findById(scheduleId)
                 .orElseThrow(() -> new IllegalArgumentException("일정 없음"));
 
         // 조회된 일정에서 '결과 ID'를 꺼낸다
         // domain의 필드명: scheduleResultDailyResultId
-        ScheduleResult result = schedule.getScheduleResultId();
+        ScheduleResult result = schedule.getScheduleResult();   // 필드명 변경
         if (result == null)
             throw new IllegalStateException("일정에 결과 ID가 연결되지 않았습니다.");
 
@@ -77,6 +81,8 @@ public class TodayScheduleService {
         result.setRealStartTime(LocalDateTime.now());
 
         // 레포지토리에게 변경된 'result' 객체를 저장(UPDATE)
+        // scheduleResultRepository.save(result);
+        // 변경 감지(Dirty Checking)로 인해 save 호출 안해도 되지만 명시적으로 유지
         scheduleResultRepository.save(result);
     }
 
@@ -88,11 +94,16 @@ public class TodayScheduleService {
     @Transactional
     public void endSchedule(Long scheduleId) {
         // '계획' 엔티티를 탐색
-        TodaySchedule schedule = todayScheduleRepository.findById(scheduleId)
+//        TodaySchedule schedule = todayScheduleRepository.findById(scheduleId)
+//                .orElseThrow(() -> new IllegalArgumentException("일정 없음"));
+        // [변경] TodaySchedule -> Schedule
+        Schedule schedule = schedulesRepository.findById(scheduleId)
                 .orElseThrow(() -> new IllegalArgumentException("일정 없음"));
 
         // '계획'에 연결된 '결과' 엔티티를 탐색
-        ScheduleResult result = schedule.getScheduleResultId();
+        // ScheduleResult result = schedule.getScheduleResultId();
+        // 필드명 변경
+        ScheduleResult result = schedule.getScheduleResult();
         if (result == null)
             throw new IllegalStateException("일정에 결과 객체가 연결되지 " + "않았습니다.");
 

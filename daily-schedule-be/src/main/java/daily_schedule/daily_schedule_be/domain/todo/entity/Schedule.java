@@ -1,33 +1,28 @@
 package daily_schedule.daily_schedule_be.domain.todo.entity;
 
-import daily_schedule.daily_schedule_be.domain.todo.dto.request.SchedulesRequestDto;
+import daily_schedule.daily_schedule_be.domain.today.entity.ScheduleResult;
+import daily_schedule.daily_schedule_be.domain.user.entity.User;
+import daily_schedule.daily_schedule_be.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
-// @Entity: JPA에게 해당 클래스가 DB 테이블과 매핑된다고 알리는 어노테이션
 @Entity
+@Table(name = "schedule") // 테이블 이름 통일
 @Getter
-// @NoArgsConstructor: JPA에게 필요한 기본 생성자
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-// AuditingEntityListener: 생성 시간을 자동 기록해주는 역할
-@EntityListeners(AuditingEntityListener.class)
-public class Schedule {
-    // @Id: 해당 필드가 PK임을 알리는 어노테이션
+@AllArgsConstructor
+@Builder
+// BaseEntity를 상속받아 생성시간/수정시간 자동 관리
+public class Schedule extends BaseEntity {
+
     @Id
-    // DB가 ID를 자동으로 증가하도록 생성
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // DB 컬럼
-    // NOT NULL -> nullable = false
     @Column(nullable = false)
-    private String userId;
+    private String content;
 
     @Column(nullable = false)
     private LocalDateTime startTime;
@@ -35,32 +30,21 @@ public class Schedule {
     @Column(nullable = false)
     private LocalDateTime endTime;
 
-    @Column(nullable = false)
-    private String content;
+    // [핵심] 팀원 코드(Long userId) 대신 본인 코드(User 객체) 사용
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(nullable = false)
-    private Long scheduleResultId;
+    // [핵심] 팀원 코드(Long scheduleResultId) 대신 본인 코드(Result 객체) 사용
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "schedule_result_id")
+    private ScheduleResult scheduleResult;
 
-    // 데이터 생성 시 자동 시간 기록
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-    // DTO를 받아서 Entity를 생성하는 생성자
-    public Schedule(SchedulesRequestDto requestDto, String userId, Long scheduleResultId) {
-        this.userId = userId;
-        this.scheduleResultId = scheduleResultId;
-        this.startTime = requestDto.getStartTime();
-        this.endTime = requestDto.getEndTime();
-        this.content = requestDto.getContent();
-    }
-
-    public void update(SchedulesRequestDto requestDto) {
-        this.startTime = requestDto.getStartTime();
-        this.endTime = requestDto.getEndTime();
-        this.content = requestDto.getContent();
+    // 변경(Update) 로직
+    public void update(String content, LocalDateTime startTime,
+                       LocalDateTime endTime) {
+        this.content = content;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }

@@ -3,6 +3,7 @@ package daily_schedule.daily_schedule_be.domain.today.controller;
 import daily_schedule.daily_schedule_be.domain.today.dto.response.TodayScheduleResponseDto;
 import daily_schedule.daily_schedule_be.domain.today.entity.TodaySchedule;
 import daily_schedule.daily_schedule_be.domain.today.service.TodayScheduleService;
+import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
 import daily_schedule.daily_schedule_be.domain.user.entity.User;
 import daily_schedule.daily_schedule_be.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,10 @@ public class TodayScheduleController {
                 () -> new IllegalArgumentException(("테스트 유저가 없습니다.")));
 
         // Service에게 "이 사용자의, 이 날짜의 일정 목록을 찾아주십쇼"라고 시킴
-        List<TodaySchedule> schedules = todayScheduleService.getSchedulesByDate(
+        // List<TodaySchedule> schedules =
+        // todayScheduleService.getSchedulesByDate(tempUser, date);
+        // 받는 타입 List<TodaySchedule> -> List<Schedule>
+        List<Schedule> schedules = todayScheduleService.getSchedulesByDate(
                 tempUser, date);
 
         // 기존 엔티티 목록을 DTO 목록으로 변환
