@@ -1,16 +1,16 @@
 package daily_schedule.daily_schedule_be.domain.today.controller;
 
 import daily_schedule.daily_schedule_be.domain.today.dto.response.TodayScheduleResponseDto;
-import daily_schedule.daily_schedule_be.domain.today.entity.TodaySchedule;
 import daily_schedule.daily_schedule_be.domain.today.service.TodayScheduleService;
+import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
 import daily_schedule.daily_schedule_be.domain.user.entity.User;
 import daily_schedule.daily_schedule_be.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,25 +41,27 @@ public class TodayScheduleController {
      * 특정 날짜의 일정 목록을 조회하는 API (GET /api/schedules?date=YYYY-MM-DD)
      *
      * @param date (입력) URL 쿼리 파라미터(?date=...)로 전달되는 날짜
-     * @return {@link TodaySchedule} 엔티티 목록을 포함한 {@link ResponseEntity}
+     * @return {@link Schedule} 엔티티 목록을 포함한 {@link ResponseEntity}
      * @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) "YYYY-MM-DD" 형식의 문자열을
      * LocalDate 객체로 변환
      */
     @GetMapping
     public ResponseEntity<List<TodayScheduleResponseDto>> getSchedulesByDate(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @AuthenticationPrincipal UserDetails userDetails)
-    {
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         // User tempUser = null;
         // TODO: 추후 User에 implements를 한다면 오버라이딩된 것으로 대체
         String userId = userDetails.getUsername();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         // Service에게 "이 사용자의, 이 날짜의 일정 목록을 찾아주십쇼"라고 시킴
-        List<TodaySchedule> schedules = todayScheduleService.getSchedulesByDate(
-                user, date);
+        // List<TodaySchedule> schedules =
+        // todayScheduleService.getSchedulesByDate(tempUser, date);
+        // 받는 타입 List<TodaySchedule> -> List<Schedule>
+        List<Schedule> schedules = todayScheduleService.getSchedulesByDate(user,
+                date);
 
         // 기존 엔티티 목록을 DTO 목록으로 변환
         List<TodayScheduleResponseDto> response = schedules.stream()
