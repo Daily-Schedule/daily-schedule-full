@@ -25,7 +25,7 @@ import java.util.Arrays;
 public class SecurityConfig {
     private final JwtTokenProvider jwtProvider;
 
-    private final String[] allowedUrls = {"/api/user/register", "/api/user/login", "/api/schedules/**"};
+    private final String[] allowedUrls = {"/api/user/register", "/api/user" + "/login", "/api/today-schedules/**", "/api" + "/schedules/**"};
 
     @Bean
     public PasswordEncoder passwordEncoder() {

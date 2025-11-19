@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * @RequiredArgsConstructor : final로 선언된 필드(Service)를 자동으로 주입(DI)
  */
 @RestController
-@RequestMapping("/api/schedules")
+@RequestMapping("/api/today-schedules")
 @RequiredArgsConstructor
 public class TodayScheduleController {
     /**

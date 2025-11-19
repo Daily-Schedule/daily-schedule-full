@@ -1,11 +1,11 @@
 package daily_schedule.daily_schedule_be.domain.todo.service;
 
-import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
-import daily_schedule.daily_schedule_be.domain.todo.entity.ScheduleResult;
+import daily_schedule.daily_schedule_be.domain.today.entity.ScheduleResult;
+import daily_schedule.daily_schedule_be.domain.today.repository.ScheduleResultRepository;
 import daily_schedule.daily_schedule_be.domain.todo.dto.request.SchedulesRequestDto;
 import daily_schedule.daily_schedule_be.domain.todo.dto.response.SchedulesResponseDto;
+import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
 import daily_schedule.daily_schedule_be.domain.todo.repository.SchedulesRepository;
-import daily_schedule.daily_schedule_be.domain.todo.repository.SchedulesResultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SchedulesService {
     private final SchedulesRepository schedulesRepository;
-    private final SchedulesResultRepository scheduleResultRepository;
+    private final ScheduleResultRepository scheduleResultRepository;
 
     // 이 메서드 전체가 하나의 트랜잭션으로 동작
     // CREATE
@@ -51,18 +51,19 @@ public class SchedulesService {
         LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
 
         // Repository 쿼리 메서드 변경
-        List<Schedule> schedules = schedulesRepository.findAllByUserIdAndStartTimeBetween(userId, startOfDay, endOfDay);
+        List<Schedule> schedules = schedulesRepository.findAllByUserIdAndStartTimeBetween(
+                userId, startOfDay, endOfDay);
 
-        return schedules.stream()
-                .map(SchedulesResponseDto::new)
+        return schedules.stream().map(SchedulesResponseDto::new)
                 .collect(Collectors.toList());
     }
 
     // UPDATE
     @Transactional
-    public SchedulesResponseDto updateSchedule(Long id, String userId, SchedulesRequestDto requestDto) {
-        Schedule schedule = schedulesRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 없습니다. id=" + id));
+    public SchedulesResponseDto updateSchedule(Long id, String userId,
+                                               SchedulesRequestDto requestDto) {
+        Schedule schedule = schedulesRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("해당 스케줄이 없습니다. id=" + id));
 
         if (!schedule.getUserId().equals(userId)) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
@@ -77,8 +78,8 @@ public class SchedulesService {
     // DELETE
     @Transactional
     public void deleteSchedule(Long id, String userId) {
-        Schedule schedule = schedulesRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 없습니다. id=" + id));
+        Schedule schedule = schedulesRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("해당 스케줄이 없습니다. id=" + id));
 
         if (!schedule.getUserId().equals(userId)) {
             throw new IllegalArgumentException("삭제 권한이 없습니다.");
