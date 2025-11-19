@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -24,12 +27,11 @@ public class UserController {
     private final UserCommandService userCommandService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRequestDTO.Signup signup) {
+    public ResponseEntity<Map<String, String>> registerUser(@Valid @RequestBody UserRequestDTO.Signup signup) {
         userCommandService.register(signup);
 
-        UserResponseDTO response = UserResponseDTO.builder()
-                .message("회원가입에 성공했습니다.")
-                .build();
+        // Map을 사용하여 "message" 필드만 포함합니다.
+        Map<String, String> response = Collections.singletonMap("message", "회원가입에 성공했습니다.");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
