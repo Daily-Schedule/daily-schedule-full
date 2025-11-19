@@ -31,7 +31,12 @@ public class ScheduleResult {
      * '어제' 탭에서 이 값으로 '완료 여부'를 판단
      */
     @Column(name = "isFinished")
-    private boolean isFinished; // 완료 여부
+    private boolean isFinished = false; // 완료 여부
 
-    //
+    // 'todo' 패키지의 종근님 메서드
+    public static ScheduleResult createNewResult() {
+        ScheduleResult result = new ScheduleResult();
+        result.setFinished(false);
+        return result;
+    }
 }
