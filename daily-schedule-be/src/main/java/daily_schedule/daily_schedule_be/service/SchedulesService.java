@@ -51,7 +51,7 @@ public class SchedulesService {
         LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
 
         // Repository 쿼리 메서드 변경
-        List<Schedule> schedules = schedulesRepository.findAllByUserIdAndDate(userId, startOfDay, endOfDay);
+        List<Schedule> schedules = schedulesRepository.findAllByUserIdAndStartTimeBetween(userId, startOfDay, endOfDay);
 
         return schedules.stream()
                 .map(SchedulesResponseDto::new)
