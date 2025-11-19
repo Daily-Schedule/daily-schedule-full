@@ -61,8 +61,7 @@ public class TodayScheduleController {
                 .map(TodayScheduleResponseDto::from) // 하나씩 변환
                 .collect(Collectors.toList());
 
-        // Service가 찾아온 '일정 목록'을 프론트엔드에게 성공(OK) 상태와 함께 반환
-        // 현재는 DB에 데이터가 없어 빈 배열 반환!!
+        // 엔티티 목록을 반환한 DTO 목록을 반환
         return ResponseEntity.ok(response);
     }
 
