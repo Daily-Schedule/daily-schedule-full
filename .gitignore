@@ -226,3 +226,6 @@ $RECYCLE.BIN/
 github
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,intellij,java,react,visualstudiocode
+
+# application.yml
+daily-schedule-be/src/main/resources/application.yml
