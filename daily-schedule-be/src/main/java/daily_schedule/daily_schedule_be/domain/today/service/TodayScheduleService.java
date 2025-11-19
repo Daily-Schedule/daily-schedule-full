@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * '오늘 일정' 기능의 핵심 비즈니스 로직을 구현하는 Service
  * <p>
- * {@link TodayScheduleRepository}, {@link ScheduleResultRepository}를 통해 DB 작업을 수행
+ * {@link SchedulesRepository}, {@link ScheduleResultRepository}를 통해 DB 작업을 수행
  *
  * @Service : 이 클래스가 '서비스' 계층의 컴포넌트임을 스프링에게 알림
  * @RequiredArgsConstructor : final 필드(Repository)에 대한 생성자를 자동으로 생성
