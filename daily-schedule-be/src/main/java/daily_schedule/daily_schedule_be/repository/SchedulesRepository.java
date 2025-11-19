@@ -10,5 +10,5 @@ import java.util.List;
 // 인터페이스만 만들어두면 Spring Data JPA가 알아서 구현체를 만듦
 // save(), findById(), findAll() 등 기본 메서드는 이미 구현되어 있음
 public interface SchedulesRepository extends JpaRepository<Schedule, Long> {
-    List<Schedule> findAllByUserIdAndDate(String userId, LocalDateTime start, LocalDateTime end);
+    List<Schedule> findAllByUserIdAndStartTimeBetween(String userId, LocalDateTime start, LocalDateTime end);
 }
