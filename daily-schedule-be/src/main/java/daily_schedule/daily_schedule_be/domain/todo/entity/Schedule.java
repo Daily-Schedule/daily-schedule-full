@@ -4,7 +4,11 @@ import daily_schedule.daily_schedule_be.domain.today.entity.ScheduleResult;
 import daily_schedule.daily_schedule_be.domain.user.entity.User;
 import daily_schedule.daily_schedule_be.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +17,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 // BaseEntity를 상속받아 생성시간/수정시간 자동 관리
 public class Schedule extends BaseEntity {
 

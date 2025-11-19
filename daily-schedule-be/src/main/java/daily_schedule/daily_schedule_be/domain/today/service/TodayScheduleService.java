@@ -2,7 +2,6 @@ package daily_schedule.daily_schedule_be.domain.today.service;
 
 import daily_schedule.daily_schedule_be.domain.today.entity.ScheduleResult;
 import daily_schedule.daily_schedule_be.domain.today.repository.ScheduleResultRepository;
-import daily_schedule.daily_schedule_be.domain.today.repository.TodayScheduleRepository;
 import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
 import daily_schedule.daily_schedule_be.domain.todo.repository.SchedulesRepository;
 import daily_schedule.daily_schedule_be.domain.user.entity.User;
