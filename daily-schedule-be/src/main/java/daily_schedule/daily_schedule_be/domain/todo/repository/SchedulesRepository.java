@@ -1,6 +1,6 @@
-package daily_schedule.daily_schedule_be.repository;
+package daily_schedule.daily_schedule_be.domain.todo.repository;
 
-import daily_schedule.daily_schedule_be.domain.Schedule;
+import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
-package daily_schedule.daily_schedule_be.dto.response;
+package daily_schedule.daily_schedule_be.domain.todo.dto.response;
 
-import daily_schedule.daily_schedule_be.domain.Schedule;
+import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
 import lombok.Getter;
 import java.time.LocalDateTime;
 

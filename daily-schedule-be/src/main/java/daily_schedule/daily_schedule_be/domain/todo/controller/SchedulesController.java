@@ -1,8 +1,8 @@
-package daily_schedule.daily_schedule_be.controller;
+package daily_schedule.daily_schedule_be.domain.todo.controller;
 
-import daily_schedule.daily_schedule_be.dto.request.SchedulesRequestDto;
-import daily_schedule.daily_schedule_be.dto.response.SchedulesResponseDto;
-import daily_schedule.daily_schedule_be.service.SchedulesService;
+import daily_schedule.daily_schedule_be.domain.todo.dto.request.SchedulesRequestDto;
+import daily_schedule.daily_schedule_be.domain.todo.dto.response.SchedulesResponseDto;
+import daily_schedule.daily_schedule_be.domain.todo.service.SchedulesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

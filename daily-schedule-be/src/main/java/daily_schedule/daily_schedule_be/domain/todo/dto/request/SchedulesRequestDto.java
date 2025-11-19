@@ -1,4 +1,4 @@
-package daily_schedule.daily_schedule_be.dto.request;
+package daily_schedule.daily_schedule_be.domain.todo.dto.request;
 
 import lombok.Getter;
 import java.time.LocalDateTime;

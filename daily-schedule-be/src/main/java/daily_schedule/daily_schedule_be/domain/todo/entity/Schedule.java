@@ -1,6 +1,6 @@
-package daily_schedule.daily_schedule_be.domain;
+package daily_schedule.daily_schedule_be.domain.todo.entity;
 
-import daily_schedule.daily_schedule_be.dto.request.SchedulesRequestDto;
+import daily_schedule.daily_schedule_be.domain.todo.dto.request.SchedulesRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

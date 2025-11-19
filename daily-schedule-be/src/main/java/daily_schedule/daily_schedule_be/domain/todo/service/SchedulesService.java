@@ -1,11 +1,11 @@
-package daily_schedule.daily_schedule_be.service;
+package daily_schedule.daily_schedule_be.domain.todo.service;
 
-import daily_schedule.daily_schedule_be.domain.Schedule;
-import daily_schedule.daily_schedule_be.domain.ScheduleResult;
-import daily_schedule.daily_schedule_be.dto.request.SchedulesRequestDto;
-import daily_schedule.daily_schedule_be.dto.response.SchedulesResponseDto;
-import daily_schedule.daily_schedule_be.repository.SchedulesRepository;
-import daily_schedule.daily_schedule_be.repository.SchedulesResultRepository;
+import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
+import daily_schedule.daily_schedule_be.domain.todo.entity.ScheduleResult;
+import daily_schedule.daily_schedule_be.domain.todo.dto.request.SchedulesRequestDto;
+import daily_schedule.daily_schedule_be.domain.todo.dto.response.SchedulesResponseDto;
+import daily_schedule.daily_schedule_be.domain.todo.repository.SchedulesRepository;
+import daily_schedule.daily_schedule_be.domain.todo.repository.SchedulesResultRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
