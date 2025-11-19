@@ -1,0 +1,34 @@
+server:
+  port: 8080 # 서버 포트 설정 (선택 사항)
+
+spring:
+  application:
+    name: daily-schedule-be
+
+  # Docker로 띄운 MySQL DB 정보
+  datasource:
+    url: jdbc:mysql://localhost:3307/jaksim_db
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # JPA (Java Persistence API) 설정
+  jpa:
+    # DBMS마다 쿼리가 다르기 때문에 발생하는 문제를 방지하기 위한 설정
+    # Spring Boot에서 자동으로 MySQL을 인식하여 설정하기 때문에 특정 케이스를
+    # 제외하고는 명시적으로 표현해줄 필요 없음
+    # database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      # Java Entity 클래스를 기반으로 DB 테이블을 자동으로 관리해주는 설정
+      # update 옵션 -> Entity 변경 사항을 감지해서 DB 테이블에 반영 (데이터 유지)
+      # create 옵션 -> 앱 실행 시마다 기존 테이블을 지우고 새로 생성 (데이터 삭제)
+      ddl-auto: update
+    # JPA가 실행하는 SQL 쿼리를 로그로 보여주는 설정
+    show-sql: true
+
+# 사용자 정의 JWT 설정
+jwt:
+  # Base64로 인코딩된, 32바이트 이상의 비밀 키
+  secret-key: YourSuperSecretKeyThatIsVeryLongAndSecureForHS256
+  # 토큰 만료 시간 (예: 1800000ms = 30분)
+  expiration-time: 1800000
