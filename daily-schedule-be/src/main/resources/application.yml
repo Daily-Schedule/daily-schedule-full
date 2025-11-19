@@ -1,5 +1,5 @@
 server:
-  port: 9090
+  port: 8080 # 서버 포트 설정 (선택 사항)
 
 spring:
   application:
@@ -9,7 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3307/jaksim_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
-    password: admin
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # JPA (Java Persistence API) 설정
@@ -25,3 +25,10 @@ spring:
       ddl-auto: update
     # JPA가 실행하는 SQL 쿼리를 로그로 보여주는 설정
     show-sql: true
+
+# 사용자 정의 JWT 설정
+jwt:
+  # Base64로 인코딩된, 32바이트 이상의 비밀 키
+  secret-key: YourSuperSecretKeyThatIsVeryLongAndSecureForHS256
+  # 토큰 만료 시간 (예: 1800000ms = 30분)
+  expiration-time: 1800000

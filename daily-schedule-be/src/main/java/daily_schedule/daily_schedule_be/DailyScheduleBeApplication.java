@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 public class DailyScheduleBeApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DailyScheduleBeApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DailyScheduleBeApplication.class, args);
+    }
 
 }
