@@ -6,7 +6,9 @@ import daily_schedule.daily_schedule_be.domain.todo.service.SchedulesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -23,10 +25,15 @@ public class SchedulesController {
     @PostMapping
     public ResponseEntity<SchedulesResponseDto> createSchedule(
             // 요청 Body의 JSON을 DTO로 변환
-            @RequestBody SchedulesRequestDto requestDto
+            @RequestBody SchedulesRequestDto requestDto,
+            // TODO: 추후 User에 implements를 한다면 오버라이딩된 것으로 대체
+            // Spring Security가 로그인용으로 제공하는 UserDetails 규격
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
+        String userId = userDetails.getUsername();
+
         // Service를 호출하여 비즈니스 로직 수행
-        SchedulesResponseDto responseDto = schedulesService.createSchedule(requestDto);
+        SchedulesResponseDto responseDto = schedulesService.createSchedule(userId, requestDto);
 
         // 성공 응답 반환 (HTTP Status 201 CREATED)
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
@@ -36,11 +43,11 @@ public class SchedulesController {
     // (GET /api/schedules?userId=yoon2013&date=2025-11-14)
     @GetMapping
     public ResponseEntity<List<SchedulesResponseDto>> readSchedule(
-            @RequestParam String date
+            @RequestParam String date,
+            // TODO: 추후 User에 implements를 한다면 오버라이딩된 것으로 대체
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: 추후 토큰에서 추출하는 것으로 대체
-        String userId = "yoon2013";
-
+        String userId = userDetails.getUsername();
         // Service를 호출하여 비즈니스 로직 수행
         List<SchedulesResponseDto> responseDtoList = schedulesService.readSchedule(userId, date);
 
@@ -54,9 +61,11 @@ public class SchedulesController {
     public ResponseEntity<SchedulesResponseDto> updateSchedule(
             // URL 경로의 id를 변수로 받음
             @RequestParam Long id,
-            @RequestBody SchedulesRequestDto requestDto
+            @RequestBody SchedulesRequestDto requestDto,
+            // TODO: 추후 User에 implements를 한다면 오버라이딩된 것으로 대체
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String userId = "yoon2013";
+        String userId = userDetails.getUsername();
 
         // Service를 호출하여 비즈니스 로직 수행
         SchedulesResponseDto responseDto = schedulesService.updateSchedule(id, userId, requestDto);
@@ -70,9 +79,11 @@ public class SchedulesController {
     @DeleteMapping
     public ResponseEntity<SchedulesResponseDto> deleteSchedule(
             // URL 경로의 id를 변수로 받음
-            @RequestParam Long id
+            @RequestParam Long id,
+            // TODO: 추후 User에 implements를 한다면 오버라이딩된 것으로 대체
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String userId = "yoon2013";
+        String userId = userDetails.getUsername();
 
         // Service를 호출하여 비즈니스 로직 수행
         schedulesService.deleteSchedule(id, userId);

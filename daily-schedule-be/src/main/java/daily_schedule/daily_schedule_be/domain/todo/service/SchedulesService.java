@@ -27,8 +27,7 @@ public class SchedulesService {
     // 이 메서드 전체가 하나의 트랜잭션으로 동작
     // CREATE
     @Transactional
-    public SchedulesResponseDto createSchedule(SchedulesRequestDto requestDto) {
-        String userId = "yoon2013";
+    public SchedulesResponseDto createSchedule(String userId, SchedulesRequestDto requestDto) {
 
         ScheduleResult newResult = ScheduleResult.createNewResult();
         ScheduleResult savedResult = scheduleResultRepository.save(newResult);
