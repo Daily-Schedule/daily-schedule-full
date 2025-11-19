@@ -34,7 +34,7 @@ public class SchedulesController {
 
     // 내일 할 일 가져오기 API
     // (GET /api/schedules?userId=yoon2013&date=2025-11-14)
-    @GetMapping("/tomorrow")
+    @GetMapping
     public ResponseEntity<List<SchedulesResponseDto>> readSchedule(
             @RequestParam String date
     ) {
@@ -49,11 +49,11 @@ public class SchedulesController {
     }
 
     // 할 일 수정 API
-    // (PATCH /api/schedule/{id})
-    @PatchMapping("/{id}")
+    // (PATCH /api/schedules/{id})
+    @PatchMapping
     public ResponseEntity<SchedulesResponseDto> updateSchedule(
             // URL 경로의 id를 변수로 받음
-            @PathVariable Long id,
+            @RequestParam Long id,
             @RequestBody SchedulesRequestDto requestDto
     ) {
         String userId = "yoon2013";
@@ -66,11 +66,11 @@ public class SchedulesController {
     }
 
     // 할 일 삭제 API
-    // (DELETE /api/schedule/{id})
-    @DeleteMapping("/{id}")
+    // (DELETE /api/schedules/{id})
+    @DeleteMapping
     public ResponseEntity<SchedulesResponseDto> deleteSchedule(
             // URL 경로의 id를 변수로 받음
-            @PathVariable Long id
+            @RequestParam Long id
     ) {
         String userId = "yoon2013";
 
