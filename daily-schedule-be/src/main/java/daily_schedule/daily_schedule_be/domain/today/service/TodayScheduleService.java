@@ -75,6 +75,10 @@ public class TodayScheduleService {
         ScheduleResult result = schedule.getScheduleResult();   // 필드명 변경
         if (result == null)
             throw new IllegalStateException("일정에 결과 ID가 연결되지 않았습니다.");
+        // 이미 시작 시간이 기록되어 있다면 예외 처리 or 무시
+        if (result.getRealStartTime() != null) {
+            throw new IllegalStateException("이미 시작된 일정입니다.");
+        }
 
         // '결과' 엔티티의 'realStartTime' 필드에 '현재 시간'을 기록(Setter)
         result.setRealStartTime(LocalDateTime.now().withNano(0));
