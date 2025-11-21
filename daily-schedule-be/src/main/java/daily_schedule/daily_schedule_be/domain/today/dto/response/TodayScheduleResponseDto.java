@@ -20,6 +20,10 @@ public class TodayScheduleResponseDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime endTime;
+    // 실제 시작 시간 (이 값이 존재하면 타이머가 돌고 있다는 증거)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime realStartTime;
+
     private boolean isFinished; // 결과 객체에서 뽑아올 정보
 
     private long plannedDuration; // 계획 순공 시간 (분 단위)
@@ -30,6 +34,7 @@ public class TodayScheduleResponseDto {
     public static TodayScheduleResponseDto from(Schedule entity) {
         boolean finished = false;
         long realDurationValue = 0; // 초기값:0
+        LocalDateTime realStartTimeValue = null; // 초기값 null
 
         long plannedDurationValue = Duration.between(entity.getStartTime(),
                 entity.getEndTime()).toMinutes();
@@ -42,6 +47,8 @@ public class TodayScheduleResponseDto {
         if (entity.getScheduleResult() != null) {
             ScheduleResult result = entity.getScheduleResult();
             finished = result.isFinished();
+            // 결과 객체에서 실제 시작 시간 꺼내기
+            realStartTimeValue = result.getRealStartTime();
 
             // 시작 시간과 종료 시간이 모두 존재할 때만 계산 (종료 버튼을 눌러야 시간이 확정되므로)
             if (result.getRealStartTime() != null && result.getRealEndTime() != null) {
@@ -55,6 +62,8 @@ public class TodayScheduleResponseDto {
                 .endTime(entity.getEndTime()).isFinished(finished)
                 // 계산된 값 주입
                 .plannedDuration(plannedDurationValue)
-                .realDuration(realDurationValue).build();
+                .realDuration(realDurationValue)
+                .realStartTime(realStartTimeValue).build();
+
     }
 }
