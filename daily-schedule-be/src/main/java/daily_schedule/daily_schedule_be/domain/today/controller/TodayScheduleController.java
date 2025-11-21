@@ -100,4 +100,36 @@ public class TodayScheduleController {
 
         return ResponseEntity.ok(" 일정이 종료되었습니다.");
     }
+
+    /**
+     * 하루 마감 처리 API
+     * POST /api/today-schedules/finish?date=2025-11-21
+     */
+    @PostMapping("/finish")
+    public ResponseEntity<String> finishToday(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String userId = userDetails.getUsername();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        todayScheduleService.finishDay(user, date);
+        return ResponseEntity.ok("오늘 하루가 마감되었습니다.");
+    }
+
+    /**
+     * 마감 여부 확인 API (새로고침 시 상태 복구용)
+     * GET /api/today-schedules/is-finished?date=2025-11-21
+     */
+    @GetMapping("/is-finished")
+    public ResponseEntity<Boolean> checkDayFinished(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String userId = userDetails.getUsername();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        boolean isFinished = todayScheduleService.isDayFinished(user, date);
+        return ResponseEntity.ok(isFinished);
+    }
 }

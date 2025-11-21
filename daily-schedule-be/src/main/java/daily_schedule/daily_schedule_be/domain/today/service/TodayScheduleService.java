@@ -1,6 +1,8 @@
 package daily_schedule.daily_schedule_be.domain.today.service;
 
+import daily_schedule.daily_schedule_be.domain.today.entity.DailyDayClose;
 import daily_schedule.daily_schedule_be.domain.today.entity.ScheduleResult;
+import daily_schedule.daily_schedule_be.domain.today.repository.DailyDayCloseRepository;
 import daily_schedule.daily_schedule_be.domain.today.repository.ScheduleResultRepository;
 import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
 import daily_schedule.daily_schedule_be.domain.todo.repository.SchedulesRepository;
@@ -32,6 +34,8 @@ public class TodayScheduleService {
     // 일정 결과를 관리하는 레포지토리
     // 추후 API는 이 레포지토리를 통해 '결과'를 '저장(UPDATE)' 함
     private final ScheduleResultRepository scheduleResultRepository;
+    // 마감 관리 레포지토리
+    private final DailyDayCloseRepository dailyDayCloseRepository;
 
 
     /**
@@ -117,5 +121,36 @@ public class TodayScheduleService {
 
         // '일정 결과' 레포지토리에게 변경사항 저장(UPDATE) 명령
         scheduleResultRepository.save(result);
+    }
+
+    /**
+     * 오늘 하루 마감하기
+     *
+     * @param user
+     * @param date
+     */
+    @Transactional
+    public void finishDay(User user, LocalDate date) {
+        // 이미 마감했는지 확인 (중복 저장 방지)
+        if (dailyDayCloseRepository.existsByUserAndCloseDate(user, date)) {
+            return;
+        }
+
+        DailyDayClose dayClose = DailyDayClose.builder().user(user)
+                .closeDate(date).build();
+
+        dailyDayCloseRepository.save(dayClose);
+    }
+    
+    /**
+     * 오늘 하루 마감 여부 확인
+     *
+     * @param user
+     * @param date
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public boolean isDayFinished(User user, LocalDate date) {
+        return dailyDayCloseRepository.existsByUserAndCloseDate(user, date);
     }
 }
