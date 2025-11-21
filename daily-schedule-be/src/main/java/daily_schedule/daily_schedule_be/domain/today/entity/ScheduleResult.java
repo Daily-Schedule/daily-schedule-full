@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 /**
@@ -40,5 +41,18 @@ public class ScheduleResult {
         ScheduleResult result = new ScheduleResult();
         result.setFinished(false);
         return result;
+    }
+
+    /**
+     * 실제 진행 시간을 계산하는 메서드
+     *
+     * @return
+     */
+    public long calculateRealDuration() {
+        if (this.realStartTime == null || this.realEndTime == null) {
+            return 0;
+        }
+        return Duration.between(this.realStartTime, this.realEndTime)
+                .toMinutes();
     }
 }

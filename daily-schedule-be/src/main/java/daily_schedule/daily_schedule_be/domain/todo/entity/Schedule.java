@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -52,5 +53,14 @@ public class Schedule extends BaseEntity {
         this.content = content;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    /**
+     * 계획된 시간을 계산하는 메서드
+     *
+     * @return
+     */
+    public long calculatePlannedDuration() {
+        return Duration.between(this.startTime, this.endTime).toMinutes();
     }
 }
