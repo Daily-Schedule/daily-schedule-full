@@ -23,12 +23,11 @@ export function TodayTimer({
   const getInitialSeconds = () => {
     if (
       selectedSchedule &&
-      selectedSchedule.startTime &&
+      selectedSchedule.realStartTime && // 실제 시작 시간이 있으면
       !selectedSchedule.finished
     ) {
       const now = new Date().getTime();
-      // "2025-11-21 15:00:00" -> "2025-11-21T15:00:00" (브라우저 호환성 위해 T 추가)
-      const startTimeString = selectedSchedule.startTime.replace(" ", "T");
+      const startTimeString = selectedSchedule.realStartTime.replace(" ", "T");
       const startTime = new Date(startTimeString).getTime();
       const elapsed = Math.floor((now - startTime) / 1000);
       return elapsed > 0 ? elapsed : 0;
@@ -41,11 +40,7 @@ export function TodayTimer({
 
   // [수정 3] 실행 상태도 초기값 계산 (시작 시간이 있으면 true)
   const [isRunning, setIsRunning] = useState(() => {
-    return !!(
-      selectedSchedule &&
-      selectedSchedule.startTime &&
-      !selectedSchedule.finished
-    );
+    return !!(selectedSchedule?.realStartTime && !selectedSchedule?.finished);
   });
 
   // 타이머 로직 (1초마다 증가)

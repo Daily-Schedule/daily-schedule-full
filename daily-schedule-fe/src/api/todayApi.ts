@@ -6,6 +6,7 @@ export interface TodayScheduleDTO {
   content: string;
   startTime: string; // 백엔드의 LocalDateTime은 문자열로 넘어옴
   endTime: string;
+  realStartTime: string | null;
   finished: boolean; // Java의 boolean isFinished -> JSON에선 finished로 변환됨 (Jackson 기본 동작)
   plannedDuration: number;
   realDuration: number;

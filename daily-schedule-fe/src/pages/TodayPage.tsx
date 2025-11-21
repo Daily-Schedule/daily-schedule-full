@@ -5,8 +5,11 @@ import { TodayTimer } from "@/components/today-timer";
 import { TodayScheduleList } from "@/components/today-schedule-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTodaySchedules } from "@/api/todayApi"; // API 함수 임포트
+import { useToast } from "@/hooks/use-toast";
 
 export default function TodayPage() {
+  const { toast } = useToast(); // [추가] 훅을 통해 toast 함수 가져오기
+
   // 1. 한국 시간(KST) 기준으로 YYYY-MM-DD 형식 구하기
   // const today = new Date().toISOString().split("T")[0]; // [기존 코드 삭제]
   const today = new Date().toLocaleDateString("en-CA", {
@@ -31,8 +34,29 @@ export default function TodayPage() {
     null,
   );
 
+  // [1] 현재 '진행 중'인 일정 찾기 (시작은 했는데, 아직 안 끝난 일정)
+  const runningSchedule = schedules.find(
+    (s) => s.realStartTime !== null && !s.finished,
+  );
+
+  // [2] 일정 선택 핸들러 (차단 로직 포함)
+  const handleSelectSchedule = (id: number) => {
+    // 진행 중인 일정이 존재하고(Running) && 내가 클릭한게 그 일정이 아니라면(Diff)
+    if (runningSchedule && runningSchedule.id !== id) {
+      toast({
+        title: "🚫 이동 불가",
+        description: "현재 진행 중인 일정이 있습니다. 먼저 완료해주세요.",
+        variant: "destructive",
+      });
+      return; // 강제 종료 (선택 변경 안 함)
+    }
+
+    // 통과되면 선택
+    setSelectedScheduleId(id);
+  };
+
   // 선택된 일정 객체 찾기 (타이머에 제목 등을 보여주기 위해)
-  const selectedSchedule = schedules.find((s) => s.id === selectedScheduleId);
+  // const selectedSchedule = schedules.find((s) => s.id === selectedScheduleId);
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,11 +98,12 @@ export default function TodayPage() {
           </div>
 
           {/* 타이머에 선택된 일정 정보와 목록 갱신 함수 전달 */}
-          {/* ✅ key={selectedScheduleId} 추가! */}
-          {/* ID가 바뀔 때마다 컴포넌트가 새로 만들어져서 자동으로 시간이 0으로 초기화됨 */}
           <TodayTimer
             key={selectedScheduleId}
-            selectedSchedule={selectedSchedule}
+            // selectedSchedule={selectedSchedule}
+            selectedSchedule={schedules.find(
+              (s) => s.id === selectedScheduleId,
+            )}
             onScheduleEnd={refetch}
           />
 
@@ -91,7 +116,7 @@ export default function TodayPage() {
               <TodayScheduleList
                 schedules={schedules}
                 selectedScheduleId={selectedScheduleId}
-                onSelect={setSelectedScheduleId}
+                onSelect={handleSelectSchedule}
               />
             </CardContent>
           </Card>
