@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,10 +29,12 @@ public class Schedule extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    // columnDefinition을 사용해 MySQL의 DATETIME(0)으로 강제 설정 (소수점 제거)
+    @Column(nullable = false, columnDefinition = "DATETIME(0)")
     private LocalDateTime startTime;
 
-    @Column(nullable = false)
+    // columnDefinition을 사용해 MySQL의 DATETIME(0)으로 강제 설정 (소수점 제거)
+    @Column(nullable = false, columnDefinition = "DATETIME(0)")
     private LocalDateTime endTime;
 
     // [핵심] 팀원 코드(Long userId) 대신 본인 코드(User 객체) 사용
@@ -50,5 +53,14 @@ public class Schedule extends BaseEntity {
         this.content = content;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    /**
+     * 계획된 시간을 계산하는 메서드
+     *
+     * @return
+     */
+    public long calculatePlannedDuration() {
+        return Duration.between(this.startTime, this.endTime).toMinutes();
     }
 }
