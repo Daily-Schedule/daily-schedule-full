@@ -19,8 +19,34 @@ export function TodayTimer({
   onScheduleEnd,
 }: TodayTimerProps) {
   const { toast } = useToast();
-  const [seconds, setSeconds] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+  // [수정 1] 초기 시간을 계산하는 함수 분리 (useEffect 대신 사용)
+  const getInitialSeconds = () => {
+    if (
+      selectedSchedule &&
+      selectedSchedule.startTime &&
+      !selectedSchedule.finished
+    ) {
+      const now = new Date().getTime();
+      // "2025-11-21 15:00:00" -> "2025-11-21T15:00:00" (브라우저 호환성 위해 T 추가)
+      const startTimeString = selectedSchedule.startTime.replace(" ", "T");
+      const startTime = new Date(startTimeString).getTime();
+      const elapsed = Math.floor((now - startTime) / 1000);
+      return elapsed > 0 ? elapsed : 0;
+    }
+    return 0;
+  };
+
+  // [수정 2] useState 초기값에 계산 함수 전달 (컴포넌트 생성 시 1회 실행됨)
+  const [seconds, setSeconds] = useState(getInitialSeconds);
+
+  // [수정 3] 실행 상태도 초기값 계산 (시작 시간이 있으면 true)
+  const [isRunning, setIsRunning] = useState(() => {
+    return !!(
+      selectedSchedule &&
+      selectedSchedule.startTime &&
+      !selectedSchedule.finished
+    );
+  });
 
   // 타이머 로직 (1초마다 증가)
   useEffect(() => {
