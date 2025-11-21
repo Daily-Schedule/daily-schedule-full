@@ -1,10 +1,39 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query"; // React Query 추가
 import { Link } from "react-router-dom";
 import { TodayTimer } from "@/components/today-timer";
 import { TodayScheduleList } from "@/components/today-schedule-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { getTodaySchedules } from "@/api/todayApi"; // API 함수 임포트
 
 export default function TodayPage() {
+  // 1. 한국 시간(KST) 기준으로 YYYY-MM-DD 형식 구하기
+  // const today = new Date().toISOString().split("T")[0]; // [기존 코드 삭제]
+  const today = new Date().toLocaleDateString("en-CA", {
+    // en-CA는 YYYY-MM-DD 형식을 반환함
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  // 2. 서버에서 일정 데이터 가져오기 (React Query 사용)
+  const {
+    data: schedules = [], // 데이터가 없으면 빈 배열
+    refetch, // 데이터를 다시 불러오는 함수 (타이머 종료 후 목록 갱신용)
+  } = useQuery({
+    queryKey: ["todaySchedules", today],
+    queryFn: () => getTodaySchedules(today),
+  });
+
+  // 3. 현재 선택된 일정 ID 상태 관리
+  const [selectedScheduleId, setSelectedScheduleId] = useState<number | null>(
+    null,
+  );
+
+  // 선택된 일정 객체 찾기 (타이머에 제목 등을 보여주기 위해)
+  const selectedSchedule = schedules.find((s) => s.id === selectedScheduleId);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
@@ -44,26 +73,28 @@ export default function TodayPage() {
             </p>
           </div>
 
-          <TodayTimer />
+          {/* 타이머에 선택된 일정 정보와 목록 갱신 함수 전달 */}
+          {/* ✅ key={selectedScheduleId} 추가! */}
+          {/* ID가 바뀔 때마다 컴포넌트가 새로 만들어져서 자동으로 시간이 0으로 초기화됨 */}
+          <TodayTimer
+            key={selectedScheduleId}
+            selectedSchedule={selectedSchedule}
+            onScheduleEnd={refetch}
+          />
 
           <Card>
             <CardHeader>
               <CardTitle>오늘의 일정</CardTitle>
             </CardHeader>
             <CardContent>
-              <TodayScheduleList />
+              {/* 리스트에 데이터와 선택 핸들러 전달 */}
+              <TodayScheduleList
+                schedules={schedules}
+                selectedScheduleId={selectedScheduleId}
+                onSelect={setSelectedScheduleId}
+              />
             </CardContent>
           </Card>
-
-          <div className="pt-8">
-            <Button
-              variant="destructive"
-              size="lg"
-              className="w-full h-14 text-lg"
-            >
-              하루 종료
-            </Button>
-          </div>
         </div>
       </main>
     </div>
