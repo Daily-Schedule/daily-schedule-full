@@ -44,3 +44,20 @@ export const endSchedule = async (scheduleId: number) => {
   );
   return response.data;
 };
+
+// 4. 하루 마감 API 호출
+export const finishToday = async (date: string) => {
+  // POST 요청이지만 body가 없으므로 null 전달
+  const response = await api.post(`/today-schedules/finish`, null, {
+    params: { date },
+  });
+  return response.data;
+};
+
+// 5. 마감 여부 확인 API 호출
+export const checkIsDayFinished = async (date: string) => {
+  const response = await api.get<boolean>(`/today-schedules/is-finished`, {
+    params: { date },
+  });
+  return response.data;
+};
