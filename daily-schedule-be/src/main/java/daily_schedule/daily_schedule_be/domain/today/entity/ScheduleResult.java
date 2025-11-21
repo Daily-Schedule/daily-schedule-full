@@ -20,11 +20,13 @@ public class ScheduleResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // (PK)
 
-    @Column(name = "real_start_time")
-    private LocalDateTime realStartTime; // 실제 시작 시간
+    // 실제 시작 시간 (소수점 제거)
+    @Column(name = "real_start_time", columnDefinition = "DATETIME(0)")
+    private LocalDateTime realStartTime;
 
-    @Column(name = "real_end_time")
-    private LocalDateTime realEndTime; // 실제 종료 시간
+    // 실제 종료 시간 (소수점 제거)
+    @Column(name = "real_end_time", columnDefinition = "DATETIME(0)")
+    private LocalDateTime realEndTime;
 
     /**
      * '일정 종료' API가 호출되면, 이 필드가 'true'로 변환

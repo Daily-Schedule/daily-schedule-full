@@ -1,5 +1,6 @@
 package daily_schedule.daily_schedule_be.domain.today.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import daily_schedule.daily_schedule_be.domain.today.entity.ScheduleResult;
 import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
 import lombok.Builder;
@@ -13,7 +14,11 @@ import java.time.LocalDateTime;
 public class TodayScheduleResponseDto {
     private Long id;
     private String content;
+    // 프론트엔드로 보낼 때 "년-월-일 시:분:초" 형식으로 고정 (T 문자 제거)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime startTime;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime endTime;
     private boolean isFinished; // 결과 객체에서 뽑아올 정보
 

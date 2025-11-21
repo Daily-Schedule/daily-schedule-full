@@ -77,7 +77,7 @@ public class TodayScheduleService {
             throw new IllegalStateException("일정에 결과 ID가 연결되지 않았습니다.");
 
         // '결과' 엔티티의 'realStartTime' 필드에 '현재 시간'을 기록(Setter)
-        result.setRealStartTime(LocalDateTime.now());
+        result.setRealStartTime(LocalDateTime.now().withNano(0));
 
         // 레포지토리에게 변경된 'result' 객체를 저장(UPDATE)
         // scheduleResultRepository.save(result);
@@ -107,7 +107,7 @@ public class TodayScheduleService {
             throw new IllegalStateException("일정에 결과 객체가 연결되지 " + "않았습니다.");
 
         // '결과' 엔티티의 '실제 종료 시간' 필드에 '현재 시간'을 기록
-        result.setRealEndTime(LocalDateTime.now());
+        result.setRealEndTime(LocalDateTime.now().withNano(0));
         // '결과' 엔티티의 '완료 여부' 필드를 'true'로 기록
         result.setFinished(true);
 
