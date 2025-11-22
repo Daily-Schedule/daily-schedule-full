@@ -41,9 +41,7 @@ public class SchedulesService {
         ScheduleResult newResult = ScheduleResult.createNewResult();
         // (명시적으로 저장)
         ScheduleResult savedResult = scheduleResultRepository.save(newResult);
-//        Long resultId = savedResult.getId();
         // 요청받은 DTO와 자동 생성한 userId, resultId로 Entity를 생성
-//        Schedule schedule = new Schedule(requestDto, userId, resultId);
         Schedule schedule = Schedule.builder().content(requestDto.getContent())
                 .startTime(requestDto.getStartTime().withNano(0))
                 .endTime(requestDto.getEndTime().withNano(0))

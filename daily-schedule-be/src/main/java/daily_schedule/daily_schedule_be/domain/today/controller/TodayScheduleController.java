@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 /**
  * '오늘 일정' 관련 API 요청을 처리하는 컨트롤러
  * <p>
+ * 프론트엔드에서 오는 '오늘 일정' 관련 요청(조회, 시작, 종료, 마감)을 받아 서비스로 넘겨주는 역할
+ * <p>
  * {@link TodayScheduleService}를 통해 비즈니스 로직을 호출
  *
  * @RestController : 이 클래스가 RESTful API의 컨트롤러임을 나타냄 (JSON 응답)
@@ -38,32 +40,29 @@ public class TodayScheduleController {
     private final UserRepository userRepository;
 
     /**
-     * 특정 날짜의 일정 목록을 조회하는 API (GET /api/schedules?date=YYYY-MM-DD)
+     * 오늘 일정 목록 조회 API
+     * <p></p>
+     * [GET] /api/today-schedules?date=2025-11-22
      *
-     * @param date (입력) URL 쿼리 파라미터(?date=...)로 전달되는 날짜
-     * @return {@link Schedule} 엔티티 목록을 포함한 {@link ResponseEntity}
-     * @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) "YYYY-MM-DD" 형식의 문자열을
-     * LocalDate 객체로 변환
+     * @param date        : URL 쿼리 파라미터로 넘어온 날짜 (String -> LocalDate 자동 변환)
+     * @param userDetails : Spring Security가 로그인 토큰(JWT)을 해석해서 넣어준 유저 정보
      */
     @GetMapping
     public ResponseEntity<List<TodayScheduleResponseDto>> getSchedulesByDate(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        // User tempUser = null;
-        // TODO: 추후 User에 implements를 한다면 오버라이딩된 것으로 대체
+        // [보안] 토큰에 담긴 ID로 실제 유저가 DB에 존재하는지 확인
         String userId = userDetails.getUsername();
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // Service에게 "이 사용자의, 이 날짜의 일정 목록을 찾아주십쇼"라고 시킴
-        // List<TodaySchedule> schedules =
-        // todayScheduleService.getSchedulesByDate(tempUser, date);
-        // 받는 타입 List<TodaySchedule> -> List<Schedule>
+        // [로직] 서비스에게 "이 유저의 해당 날짜 일정을 다 가져와라" 명령
         List<Schedule> schedules = todayScheduleService.getSchedulesByDate(user,
                 date);
 
-        // 기존 엔티티 목록을 DTO 목록으로 변환
+        // [변환] DB에서 꺼낸 원본 데이터(Entity)를 프론트엔드용 데이터(DTO)로 변환
+        // (Entity에는 민감한 정보가 있을 수 있어 DTO로 변환해서 내보내는 것이 안전함)
         List<TodayScheduleResponseDto> response = schedules.stream()
                 .map(TodayScheduleResponseDto::from) // 하나씩 변환
                 .collect(Collectors.toList());
@@ -73,11 +72,11 @@ public class TodayScheduleController {
     }
 
     /**
-     * 특정 일정의 '시작'을 기록하는 API (PATCH /api/schedules/{scheduleId}/start
+     * 일정 시작 (타이머 시작) API
+     * <p></p>
+     * [PATCH] /api/today-schedules/{scheduleId}/start
      *
-     * @param scheduleId (입력) URL 경로에서 추출한 일정의 고유 ID
-     * @return "일정이 시작되었습니다." 성공 메시지를 포함한 {@link ResponseEntity}
-     * @PathVariable : URL 경로의 일부(scheduleId)를 파라미터로 가져옴
+     * @param scheduleId : URL 경로에 있는 일정 ID (예: /15/start -> 15번 일정)
      */
     @PatchMapping("/{scheduleId}/start")
     public ResponseEntity<String> startSchedule(@PathVariable Long scheduleId) {
@@ -88,22 +87,24 @@ public class TodayScheduleController {
     }
 
     /**
-     * 특정 일정의 '종료'를 기록하는 API (PATCH /api/schedules/{scheduleId}/end)
-     *
-     * @param scheduleId (입력) URL 경로에서 추출한 일정의 고유 ID
-     * @return "일정이 종료되었습니다." 라는 성공 메시지를 포함한 {@link ResponseEntity}
+     * 일정 종료 (타이머 종료 및 완료) API
+     * <p></p>
+     * [PATCH] /api/today-schedules/{scheduleId}/end
      */
     @PatchMapping("/{scheduleId}/end")
     public ResponseEntity<String> endSchedule(@PathVariable Long scheduleId) {
-        // Service에게 "이 ID의 일정을 '종료' 처리 해주십쇼"라고 시킴
+        // 서비스에게 "이 일정을 종료(완료) 처리해라" 명령
         todayScheduleService.endSchedule(scheduleId);
 
         return ResponseEntity.ok(" 일정이 종료되었습니다.");
     }
 
     /**
-     * 하루 마감 처리 API
-     * POST /api/today-schedules/finish?date=2025-11-21
+     * 하루 마감하기 API
+     * <p></p>
+     * [POST] /api/today-schedules/finish?date=2025-11-22
+     * <p></p>
+     * 사용자가 "오늘 하루 끝내기" 버튼을 눌렀을 때 호출
      */
     @PostMapping("/finish")
     public ResponseEntity<String> finishToday(
@@ -118,8 +119,11 @@ public class TodayScheduleController {
     }
 
     /**
-     * 마감 여부 확인 API (새로고침 시 상태 복구용)
-     * GET /api/today-schedules/is-finished?date=2025-11-21
+     * 마감 여부 확인 API
+     * <p></p>
+     * [GET] /api/today-schedules/is-finished?date=2025-11-22
+     * <p></p>
+     * 페이지 새로고침 시, 오늘이 이미 마감된 날인지 확인하기 위함
      */
     @GetMapping("/is-finished")
     public ResponseEntity<Boolean> checkDayFinished(

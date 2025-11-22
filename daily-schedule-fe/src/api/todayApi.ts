@@ -1,4 +1,4 @@
-import { api } from "@/lib/axios";
+import { axiosInstance } from "./common/axiosInstance";
 
 // 백엔드 TodayScheduleResponseDto와 매칭되는 타입 정의
 export interface TodayScheduleDTO {
@@ -17,9 +17,12 @@ export interface TodayScheduleDTO {
  * GET /api/today-schedules?date=YYYY-MM-DD
  */
 export const getTodaySchedules = async (date: string) => {
-  const response = await api.get<TodayScheduleDTO[]>(`/today-schedules`, {
-    params: { date }, // 자동으로 ?date=... 쿼리 파라미터 생성
-  });
+  const response = await axiosInstance.get<TodayScheduleDTO[]>(
+    `/api/today-schedules`,
+    {
+      params: { date }, // 자동으로 ?date=... 쿼리 파라미터 생성
+    },
+  );
   return response.data;
 };
 
@@ -28,8 +31,8 @@ export const getTodaySchedules = async (date: string) => {
  * PATCH /api/today-schedules/{scheduleId}/start
  */
 export const startSchedule = async (scheduleId: number) => {
-  const response = await api.patch<string>(
-    `/today-schedules/${scheduleId}/start`,
+  const response = await axiosInstance.patch<string>(
+    `/api/today-schedules/${scheduleId}/start`,
   );
   return response.data;
 };
@@ -39,8 +42,8 @@ export const startSchedule = async (scheduleId: number) => {
  * PATCH /api/today-schedules/{scheduleId}/end
  */
 export const endSchedule = async (scheduleId: number) => {
-  const response = await api.patch<string>(
-    `/today-schedules/${scheduleId}/end`,
+  const response = await axiosInstance.patch<string>(
+    `/api/today-schedules/${scheduleId}/end`,
   );
   return response.data;
 };
@@ -48,7 +51,7 @@ export const endSchedule = async (scheduleId: number) => {
 // 4. 하루 마감 API 호출
 export const finishToday = async (date: string) => {
   // POST 요청이지만 body가 없으므로 null 전달
-  const response = await api.post(`/today-schedules/finish`, null, {
+  const response = await axiosInstance.post(`/today-schedules/finish`, null, {
     params: { date },
   });
   return response.data;
@@ -56,8 +59,11 @@ export const finishToday = async (date: string) => {
 
 // 5. 마감 여부 확인 API 호출
 export const checkIsDayFinished = async (date: string) => {
-  const response = await api.get<boolean>(`/today-schedules/is-finished`, {
-    params: { date },
-  });
+  const response = await axiosInstance.get<boolean>(
+    `/api/today-schedules/is-finished`,
+    {
+      params: { date },
+    },
+  );
   return response.data;
 };
