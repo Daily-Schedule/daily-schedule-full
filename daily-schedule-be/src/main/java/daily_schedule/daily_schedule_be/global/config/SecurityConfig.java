@@ -25,7 +25,10 @@ import java.util.Arrays;
 public class SecurityConfig {
     private final JwtTokenProvider jwtProvider;
 
-    private final String[] allowedUrls = {"/api/user/register", "/api/user" + "/login"};
+    private final String[] allowedUrls = {"/api/user/register", "/api/user" + "/login", "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/webjars/**"};
 
     @Bean
     public PasswordEncoder passwordEncoder() {
