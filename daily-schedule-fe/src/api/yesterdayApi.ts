@@ -18,7 +18,7 @@ export interface YesterdayResponseDto {
  * GET /api/yesterday?date=YYYY-MM-DD
  */
 export const getYesterdayStatistics = async (date: string) => {
-  const response = await api.get<YesterdayResponseDto>(`/yesterday`, {
+  const response = await api.get<YesterdayResponseDto>(`/api/yesterday`, {
     // ?date=2025-11-21 형태로 변환
     params: { date },
   });
