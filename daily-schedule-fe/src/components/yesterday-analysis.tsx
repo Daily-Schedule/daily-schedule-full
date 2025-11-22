@@ -1,66 +1,155 @@
 "use client"
 
-import { Progress } from "@/components/ui/progress"
-import { CheckCircle2, Circle, Clock } from "lucide-react"
+import { CheckCircle2, XCircle, AlertCircle, ArrowRight } from "lucide-react"
+import { useMemo } from "react"
+import type { YesterdayResponseDto } from "@/api/yesterdayApi"
 
-export function YesterdayAnalysis() {
-  const completedTasks = 7
-  const totalTasks = 10
-  const completionRate = (completedTasks / totalTasks) * 100
-  const totalTime = 8.5
+// 헬퍼 함수
+const formatDuration = (minutes: number) => {
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  if (h === 0) return `${m}분`
+  if (m === 0) return `${h}시간`
+  return `${h}시간 ${m}분`
+}
+interface Props {
+  data?: YesterdayResponseDto
+}
 
-  const taskList = [
-    { name: "팀 스탠드업 미팅", completed: true, duration: "30분" },
-    { name: "프로젝트 기획서 작성", completed: true, duration: "2시간" },
-    { name: "디자인 리뷰", completed: true, duration: "1시간" },
-    { name: "코드 구현", completed: true, duration: "3시간" },
-    { name: "클라이언트 피드백 정리", completed: false, duration: "-" },
-    { name: "테스트 작성", completed: true, duration: "1.5시간" },
-    { name: "문서 업데이트", completed: false, duration: "-" },
-    { name: "주간 보고서 작성", completed: true, duration: "30분" },
-    { name: "이메일 답장", completed: true, duration: "30분" },
-    { name: "내일 일정 계획", completed: false, duration: "-" },
-  ]
+export function YesterdayAnalysis({ data }: Props) {
+  const startStatus = useMemo(() => {
+    if (!data) return { label: "", color: "", bg: "" }
+
+    if (data.startDelayMinutes > 0) return { label: "지각", color: "text-red-500", bg: "bg-red-100" }
+    if (data.startDelayMinutes < 0) return { label: "일찍 시작", color: "text-green-600", bg: "bg-green-100" }
+    return { label: "정시 시작", color: "text-blue-600", bg: "bg-blue-100" }
+  }, [data?.startDelayMinutes])
+
+  if (!data) {
+      return <div className="text-center py-10 text-muted-foreground">데이터를 불러오는 중입니다...</div>
+  }
+  
+  const totalTasks = data.taskDurations.length + data.unfinishedTodoTitles.length
+  const completedTasks = data.taskDurations.length
+  const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* 상단 요약 카드 그리드 */}
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">완료율</div>
-          <div className="text-3xl font-bold">{completionRate.toFixed(0)}%</div>
-          <Progress value={completionRate} className="h-2" />
+        {/* 시작 시간 분석 */}
+        <div className="relative rounded-xl border bg-card p-6 shadow-sm flex flex-col justify-between">
+          <div className="text-sm font-medium text-muted-foreground">첫 일정 시작</div>
+          
+          <span className={`absolute top-6 right-6 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${startStatus.bg} ${startStatus.color}`}>
+            {startStatus.label}
+          </span>
+
+          <div className="mt-2">
+            <div className={`text-2xl font-bold whitespace-nowrap ${startStatus.color}`}>
+              {formatDuration(Math.abs(data.startDelayMinutes))}
+            </div>
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-2">
+            {data.startDelayMinutes > 0 
+              ? "계획보다 늦게 시작했어요" 
+              : "상쾌한 시작이었네요!"}
+          </p>
         </div>
-        <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">완료한 일정</div>
-          <div className="text-3xl font-bold">
-            {completedTasks}/{totalTasks}
+
+        {/* 완료율 */}
+        <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col">
+          <div className="text-sm font-medium text-muted-foreground">일정 달성률</div>
+          <div className="mt-2">
+            <span className="text-2xl font-bold">{completionRate.toFixed(0)}%</span>
+            <span className="text-sm text-muted-foreground ml-2">
+              ({completedTasks}/{totalTasks})
+            </span>
+          </div>
+          <div className="w-full bg-secondary h-2 rounded-full mt-3 overflow-hidden">
+            <div 
+              className="bg-primary h-full rounded-full transition-all" 
+              style={{ width: `${completionRate}%` }}
+            />
           </div>
         </div>
-        <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">총 작업 시간</div>
-          <div className="text-3xl font-bold">{totalTime}시간</div>
+
+        {/* 총 몰입 시간 */}
+        <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col justify-between">
+          <div className="text-sm font-medium text-muted-foreground">총 몰입 시간</div>
+          <div className="mt-2 text-2xl font-bold whitespace-nowrap">
+            {formatDuration(data.totalDurationMinutes)}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            어제 집중한 시간입니다.
+          </p>
         </div>
       </div>
 
-      <div className="pt-4">
-        <h3 className="text-lg font-semibold mb-3">상세 내역</h3>
-        <div className="space-y-2">
-          {taskList.map((task, index) => (
-            <div key={index} className="flex items-center gap-3 p-3 rounded-lg border bg-card">
-              {task.completed ? (
-                <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-              ) : (
-                <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-              )}
-              <span className={`flex-1 ${!task.completed ? "text-muted-foreground" : ""}`}>{task.name}</span>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                <span className="font-mono">{task.duration}</span>
+      {/* 상세 일정 리스트 */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold flex items-center gap-2">
+          <CheckCircle2 className="w-5 h-5 text-primary" />
+          완료한 일정 분석
+        </h3>
+        <div className="grid gap-3">
+          {data.taskDurations.map((task, index) => {
+            const diff = task.actualDurationMinutes - task.plannedDurationMinutes
+            const isOvertime = diff > 0
+            const isSaveTime = diff < 0
+            
+            return (
+              <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border bg-card gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-2 w-2 rounded-full bg-primary/50" />
+                  <span className="font-medium">{task.title}</span>
+                </div>
+                
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground bg-secondary/50 px-3 py-1 rounded-md">
+                    <span>계획 {formatDuration(task.plannedDurationMinutes)}</span>
+                    <ArrowRight className="w-3 h-3" />
+                    <span className={`font-semibold ${isOvertime ? 'text-red-500' : isSaveTime ? 'text-blue-500' : 'text-foreground'}`}>
+                      실제 {formatDuration(task.actualDurationMinutes)}
+                    </span>
+                  </div>
+                  
+                  {diff !== 0 && (
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap
+                      ${isOvertime ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
+                      {isOvertime ? `+${diff}분 초과` : `${diff}분 단축`}
+                    </span>
+                  )}
+                </div>
               </div>
+            )
+          })}
+          {data.taskDurations.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground text-sm">
+              완료된 일정이 없습니다.
             </div>
-          ))}
+          )}
         </div>
       </div>
+
+      {/* 못 마친 일정 */}
+      {data.unfinishedTodoTitles.length > 0 && (
+        <div className="space-y-4 pt-4 border-t">
+          <h3 className="text-lg font-bold flex items-center gap-2 text-muted-foreground">
+            <AlertCircle className="w-5 h-5" />
+            못 마친 일정
+          </h3>
+          <div className="grid gap-2">
+            {data.unfinishedTodoTitles.map((title, index) => (
+              <div key={index} className="flex items-center gap-3 p-3 rounded-lg border border-dashed bg-muted/30 text-muted-foreground">
+                <XCircle className="h-5 w-5 flex-shrink-0" />
+                <span>{title}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
