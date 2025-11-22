@@ -1,6 +1,8 @@
 package daily_schedule.daily_schedule_be.domain.today.service;
 
+import daily_schedule.daily_schedule_be.domain.today.entity.DailyDayClose;
 import daily_schedule.daily_schedule_be.domain.today.entity.ScheduleResult;
+import daily_schedule.daily_schedule_be.domain.today.repository.DailyDayCloseRepository;
 import daily_schedule.daily_schedule_be.domain.today.repository.ScheduleResultRepository;
 import daily_schedule.daily_schedule_be.domain.todo.entity.Schedule;
 import daily_schedule.daily_schedule_be.domain.todo.repository.SchedulesRepository;
@@ -17,7 +19,7 @@ import java.util.List;
 /**
  * '오늘 일정' 기능의 핵심 비즈니스 로직을 구현하는 Service
  * <p>
- * {@link TodayScheduleRepository}, {@link ScheduleResultRepository}를 통해 DB 작업을 수행
+ * {@link SchedulesRepository}, {@link ScheduleResultRepository}를 통해 DB 작업을 수행
  *
  * @Service : 이 클래스가 '서비스' 계층의 컴포넌트임을 스프링에게 알림
  * @RequiredArgsConstructor : final 필드(Repository)에 대한 생성자를 자동으로 생성
@@ -32,6 +34,8 @@ public class TodayScheduleService {
     // 일정 결과를 관리하는 레포지토리
     // 추후 API는 이 레포지토리를 통해 '결과'를 '저장(UPDATE)' 함
     private final ScheduleResultRepository scheduleResultRepository;
+    // 마감 관리 레포지토리
+    private final DailyDayCloseRepository dailyDayCloseRepository;
 
 
     /**
@@ -75,9 +79,13 @@ public class TodayScheduleService {
         ScheduleResult result = schedule.getScheduleResult();   // 필드명 변경
         if (result == null)
             throw new IllegalStateException("일정에 결과 ID가 연결되지 않았습니다.");
+        // 이미 시작 시간이 기록되어 있다면 예외 처리 or 무시
+        if (result.getRealStartTime() != null) {
+            throw new IllegalStateException("이미 시작된 일정입니다.");
+        }
 
         // '결과' 엔티티의 'realStartTime' 필드에 '현재 시간'을 기록(Setter)
-        result.setRealStartTime(LocalDateTime.now());
+        result.setRealStartTime(LocalDateTime.now().withNano(0));
 
         // 레포지토리에게 변경된 'result' 객체를 저장(UPDATE)
         // scheduleResultRepository.save(result);
@@ -107,11 +115,42 @@ public class TodayScheduleService {
             throw new IllegalStateException("일정에 결과 객체가 연결되지 " + "않았습니다.");
 
         // '결과' 엔티티의 '실제 종료 시간' 필드에 '현재 시간'을 기록
-        result.setRealEndTime(LocalDateTime.now());
+        result.setRealEndTime(LocalDateTime.now().withNano(0));
         // '결과' 엔티티의 '완료 여부' 필드를 'true'로 기록
         result.setFinished(true);
 
         // '일정 결과' 레포지토리에게 변경사항 저장(UPDATE) 명령
         scheduleResultRepository.save(result);
+    }
+
+    /**
+     * 오늘 하루 마감하기
+     *
+     * @param user
+     * @param date
+     */
+    @Transactional
+    public void finishDay(User user, LocalDate date) {
+        // 이미 마감했는지 확인 (중복 저장 방지)
+        if (dailyDayCloseRepository.existsByUserAndCloseDate(user, date)) {
+            return;
+        }
+
+        DailyDayClose dayClose = DailyDayClose.builder().user(user)
+                .closeDate(date).build();
+
+        dailyDayCloseRepository.save(dayClose);
+    }
+    
+    /**
+     * 오늘 하루 마감 여부 확인
+     *
+     * @param user
+     * @param date
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public boolean isDayFinished(User user, LocalDate date) {
+        return dailyDayCloseRepository.existsByUserAndCloseDate(user, date);
     }
 }

@@ -30,7 +30,8 @@ public class SchedulesService {
     // 이 메서드 전체가 하나의 트랜잭션으로 동작
     // CREATE
     @Transactional
-    public SchedulesResponseDto createSchedule(String userId, SchedulesRequestDto requestDto) {
+    public SchedulesResponseDto createSchedule(String userId,
+                                               SchedulesRequestDto requestDto) {
 
         // ID로 User 엔티티를 조회 (없으면 에러 발생)
         User user = userRepository.findById(userId).orElseThrow(
@@ -44,8 +45,8 @@ public class SchedulesService {
         // 요청받은 DTO와 자동 생성한 userId, resultId로 Entity를 생성
 //        Schedule schedule = new Schedule(requestDto, userId, resultId);
         Schedule schedule = Schedule.builder().content(requestDto.getContent())
-                .startTime(requestDto.getStartTime())
-                .endTime(requestDto.getEndTime())
+                .startTime(requestDto.getStartTime().withNano(0))
+                .endTime(requestDto.getEndTime().withNano(0))
                 .user(user)             // [핵심] User 객체 연결
                 .scheduleResult(newResult) // [핵심] Result 객체 연결
                 .build();
@@ -95,8 +96,9 @@ public class SchedulesService {
         // update 메서드 호출 방식 변경
         // 기존: schedule.update(requestDto);
         // 변경: Entity에 정의한 update 메서드는 필드들을 개별적으로 받도록 되어 있음
-        schedule.update(requestDto.getContent(), requestDto.getStartTime(),
-                requestDto.getEndTime());
+        schedule.update(requestDto.getContent(),
+                requestDto.getStartTime().withNano(0),
+                requestDto.getEndTime().withNano(0));
 
         return new SchedulesResponseDto(schedule);
     }
