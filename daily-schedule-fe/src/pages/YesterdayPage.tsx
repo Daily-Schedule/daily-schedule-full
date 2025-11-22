@@ -1,19 +1,44 @@
 import { Link } from "react-router-dom";
 import { YesterdayAnalysis } from "@/components/yesterday-analysis";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { getYesterdayStatistics, type YesterdayResponseDto } from "@/api/yesterdayApi";
 
 export default function YesterdayPage() {
-  const yesterdayDateString = useMemo(() => {
+  const [data, setData] = useState<YesterdayResponseDto | undefined>(undefined);
+  const [error, setError] = useState<boolean>(false);
+
+  const { displayDate, apiDate } = useMemo(() => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    return yesterday.toLocaleDateString("ko-KR", {
+
+    const display = yesterday.toLocaleDateString("ko-KR", {
       year: "numeric",
       month: "long",
       day: "numeric",
       weekday: "long",
     });
+
+    const offset = yesterday.getTimezoneOffset() * 60000;
+    const dateOffset = new Date(yesterday.getTime() - offset);
+    const api = dateOffset.toISOString().split('T')[0];
+
+    return { displayDate: display, apiDate: api };
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await getYesterdayStatistics(apiDate);
+        setData(result);
+      } catch (err) {
+        console.error("Failed to fetch yesterday stats:", err);
+        setError(true);
+      }
+    };
+
+    fetchData();
+  }, [apiDate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,7 +69,7 @@ export default function YesterdayPage() {
         <div className="space-y-6">
           <div>
             <h2 className="text-3xl font-bold mb-2">어제</h2>
-            <p className="text-muted-foreground">{yesterdayDateString}</p>
+            <p className="text-muted-foreground">{displayDate}</p>
           </div>
 
           <Card>
@@ -52,7 +77,14 @@ export default function YesterdayPage() {
               <CardTitle>결과 분석</CardTitle>
             </CardHeader>
             <CardContent>
-              <YesterdayAnalysis />
+              {error ? (
+                <div className="text-center py-10 text-red-500">
+                  데이터를 불러오는데 실패했습니다.
+                </div>
+              ) : (
+                /* 데이터가 없으면(undefined) 자식 컴포넌트에서 로딩 표시가 뜸 */
+                <YesterdayAnalysis data={data} />
+              )}
             </CardContent>
           </Card>
         </div>
