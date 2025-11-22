@@ -14,13 +14,26 @@ import {
   CardTitle,
   CardDescription,
 } from "../components/ui/card";
+import { useMutation } from "@tanstack/react-query";
+import { PostRegister } from "@/api/authApi";
 
 export default function SignupPage() {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const { mutate: postRegister } = useMutation({
+    mutationFn: PostRegister,
+    onSuccess: () => {
+      console.log("회원가입 성공");
+      navigate("/login");
+    },
+    onError: () => {
+      console.error("회원가입에 실패했습니다.");
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +41,8 @@ export default function SignupPage() {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
-    // Demo: just redirect to today page
-    navigate("/");
+    postRegister({ id, password, nickname });
+    navigate("/login");
   };
 
   return (
@@ -44,24 +57,24 @@ export default function SignupPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">이름</Label>
+              <Label htmlFor="nickname">닉네임</Label>
               <Input
-                id="name"
+                id="nickname"
                 type="text"
-                placeholder="홍길동"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                placeholder="닉네임을 입력하세요"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">이메일</Label>
+              <Label htmlFor="id">아이디</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="id"
+                type="text"
+                placeholder="아이디를 입력하세요"
+                value={id}
+                onChange={(e) => setId(e.target.value)}
                 required
               />
             </div>
