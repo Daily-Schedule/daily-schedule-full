@@ -4,62 +4,57 @@ import { CheckCircle2, XCircle, AlertCircle, ArrowRight } from "lucide-react"
 import { useMemo } from "react"
 import type { YesterdayResponseDto } from "@/api/yesterdayApi"
 
-
-
-const DUMMY_DATA: YesterdayResponseDto = {
-  startDelayMinutes: 15, 
-  totalDurationMinutes: 380, 
-  taskDurations: [
-    { title: "팀 스탠드업 미팅", plannedDurationMinutes: 30, actualDurationMinutes: 35 },
-    { title: "API 설계", plannedDurationMinutes: 60, actualDurationMinutes: 50 },
-    { title: "핵심 로직 구현", plannedDurationMinutes: 120, actualDurationMinutes: 180 },
-    { title: "코드 리뷰", plannedDurationMinutes: 40, actualDurationMinutes: 40 },
-  ],
-  unfinishedTodoTitles: ["테스트 코드 작성", "문서 정리"],
-}
-
 // 헬퍼 함수
 const formatDuration = (minutes: number) => {
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
   if (h === 0) return `${m}분`
+  if (m === 0) return `${h}시간`
   return `${h}시간 ${m}분`
 }
-
 interface Props {
   data?: YesterdayResponseDto
 }
 
-export function YesterdayAnalysis({ data = DUMMY_DATA }: Props) {
-  const totalTasks = data.taskDurations.length + data.unfinishedTodoTitles.length
-  const completedTasks = data.taskDurations.length
-  const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
-
+export function YesterdayAnalysis({ data }: Props) {
   const startStatus = useMemo(() => {
+    if (!data) return { label: "", color: "", bg: "" }
+
     if (data.startDelayMinutes > 0) return { label: "지각", color: "text-red-500", bg: "bg-red-100" }
     if (data.startDelayMinutes < 0) return { label: "일찍 시작", color: "text-green-600", bg: "bg-green-100" }
     return { label: "정시 시작", color: "text-blue-600", bg: "bg-blue-100" }
-  }, [data.startDelayMinutes])
+  }, [data?.startDelayMinutes])
+
+  if (!data) {
+      return <div className="text-center py-10 text-muted-foreground">데이터를 불러오는 중입니다...</div>
+  }
+  
+  const totalTasks = data.taskDurations.length + data.unfinishedTodoTitles.length
+  const completedTasks = data.taskDurations.length
+  const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
 
   return (
     <div className="space-y-8">
       {/* 상단 요약 카드 그리드 */}
       <div className="grid gap-4 md:grid-cols-3">
         {/* 시작 시간 분석 */}
-        <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col justify-between">
+        <div className="relative rounded-xl border bg-card p-6 shadow-sm flex flex-col justify-between">
           <div className="text-sm font-medium text-muted-foreground">첫 일정 시작</div>
-          <div className="mt-2 flex items-end gap-2">
-            <div className={`text-2xl font-bold ${startStatus.color}`}>
-              {Math.abs(data.startDelayMinutes)}분
+          
+          <span className={`absolute top-6 right-6 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${startStatus.bg} ${startStatus.color}`}>
+            {startStatus.label}
+          </span>
+
+          <div className="mt-2">
+            <div className={`text-2xl font-bold whitespace-nowrap ${startStatus.color}`}>
+              {formatDuration(Math.abs(data.startDelayMinutes))}
             </div>
-            <span className={`mb-1 text-xs font-medium px-2 py-0.5 rounded-full ${startStatus.bg} ${startStatus.color}`}>
-              {startStatus.label}
-            </span>
           </div>
+
           <p className="text-xs text-muted-foreground mt-2">
             {data.startDelayMinutes > 0 
-              ? "계획보다 늦게 시작했어요 😅" 
-              : "상쾌한 시작이었네요! ☀️"}
+              ? "계획보다 늦게 시작했어요" 
+              : "상쾌한 시작이었네요!"}
           </p>
         </div>
 
@@ -87,7 +82,7 @@ export function YesterdayAnalysis({ data = DUMMY_DATA }: Props) {
             {formatDuration(data.totalDurationMinutes)}
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            어제 하루 동안 집중한 시간입니다.
+            어제 집중한 시간입니다.
           </p>
         </div>
       </div>
