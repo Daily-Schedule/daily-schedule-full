@@ -2,7 +2,7 @@
 
 import { CheckCircle2, XCircle, AlertCircle, ArrowRight } from "lucide-react"
 import { useMemo } from "react"
-
+import type { YesterdayResponseDto } from "@/api/yesterdayApi"
 
 
 
