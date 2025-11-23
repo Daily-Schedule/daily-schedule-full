@@ -1,15 +1,29 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import RootLayout from "./Layout";
-import { HomePage } from "./pages/HomePage";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import LoginPage from "./pages/LoginPage";
 import TodayPage from "./pages/TodayPage";
 import YesterdayPage from "./pages/YesterdayPage";
 import TomorrowPage from "./pages/tomorrowPage";
 import SignupPage from "./pages/SignupPage";
+import { useAuthContext } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthProvier";
+import type { PropsWithChildren } from "react";
 
 const queryClient = new QueryClient();
+
+const AuthRoute = ({ children }: PropsWithChildren) => {
+  const { isLogin } = useAuthContext();
+  if (isLogin == false) {
+    alert("로그인을 해주세요.");
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
 
 const router = createBrowserRouter([
   {
@@ -19,10 +33,6 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
-      },
-      {
-        path: "/login",
         element: <LoginPage />,
       },
       {
@@ -31,15 +41,27 @@ const router = createBrowserRouter([
       },
       {
         path: "/today",
-        element: <TodayPage />,
+        element: (
+          <AuthRoute>
+            <TodayPage />
+          </AuthRoute>
+        ),
       },
       {
         path: "/yesterday",
-        element: <YesterdayPage />,
+        element: (
+          <AuthRoute>
+            <YesterdayPage />
+          </AuthRoute>
+        ),
       },
       {
         path: "/tomorrow",
-        element: <TomorrowPage />,
+        element: (
+          <AuthRoute>
+            <TomorrowPage />
+          </AuthRoute>
+        ),
       },
     ],
   },
@@ -48,7 +70,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
