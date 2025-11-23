@@ -38,7 +38,6 @@ export function TomorrowScheduleList({
     e.stopPropagation();
     if (confirm("정말 이 일정을 삭제하시겠습니까?")) {
       try {
-        console.log(typeof(id));
         await deleteTodoSchedule(id);
         // 목록 갱신
         onDeleteSuccess();
