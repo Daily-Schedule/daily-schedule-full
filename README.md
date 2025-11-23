@@ -63,15 +63,29 @@
       expiration-time: 1800000
     ```
 
+## 🖌️ ERD
+
+![alt text](https://file.notion.so/f/f/f415f33a-2998-452e-8253-b12774e120e8/1c248733-49ff-4b6b-9dc4-e50ed510cf18/image.png?table=block&id=2b44a5e0-3d33-8097-b718-eceecfc579f9&spaceId=f415f33a-2998-452e-8253-b12774e120e8&expirationTimestamp=1763906400000&signature=Ueq2sYabKJALzgEGRYCr1kHUPw5yCvYg37F1NESjyqM&downloadName=image.png)
+
+## 🧐 사용자 FLOW
+
+![alt text](https://file.notion.so/f/f/f415f33a-2998-452e-8253-b12774e120e8/6042544e-71d6-4722-a954-284e903a8b94/Mermaid_Chart_-_Create_complex_visual_diagrams_with_text.-2025-11-23-054948.png?table=block&id=2b44a5e0-3d33-80f4-9307-ef818cf3aef9&spaceId=f415f33a-2998-452e-8253-b12774e120e8&expirationTimestamp=1763906400000&signature=BiSUvPev6Xh3Y31aABZQ4zcBBmIfl4T8XP6n7rZDZUY&downloadName=Mermaid+Chart+-+Create+complex%2C+visual+diagrams+with+text.-2025-11-23-054948.png)
+
 ## ✨ 주요 기능
+
+- 회원 가입 및 로그인
 
 - 내일 할 일 등록 (Create)
 - 내일 할 일 목록 조회 (Read)
 - 내일 할 일 수정 (Update)
 - 내일 할 일 삭제 (Delete)
 
+- 오늘 일정 조회
+- 오늘 일정 시작 및 종료
+
 ## ⚙️ 기술 스택
 
+- **Frontend** React, TypeScript
 - **Backend:** Spring Boot, Spring Data JPA
 - **Database:** MySQL (Docker)
 
