@@ -34,21 +34,6 @@ export const getTodoSchedules = async (date: string) => {
 };
 
 /**
- * 단일 일정 조회
- * GET /api/schedules?id=3&date=YYYY-MM-DD
- */
-export const getEachTodoSchedules = async (scheduleId: number, date: string) => {
-  try {
-    const response = await axiosInstance.get<TodoScheduleDTO[]>("/api/schedules", {
-      params: { scheduleId, date },
-    });
-    return response.data;
-  } catch (error) {
-    console.log("개별 일정 가져오기 실패", error);
-  }
-};
-
-/**
  * 일정 등록
  * POST /api/schedules
  */
