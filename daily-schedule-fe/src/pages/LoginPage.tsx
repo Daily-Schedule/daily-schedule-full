@@ -14,10 +14,12 @@ import { Button } from "../components/ui/button";
 import { PostLogin } from "../api/authApi";
 import { useToast } from "@/hooks/use-toast"; // (선택) 실패 시 메시지용
 import { useMutation } from "@tanstack/react-query";
+import { useAuthContext } from "../context/AuthContext";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { toast } = useToast(); // (선택) 토스트 메시지
+  const { setIsLogin } = useAuthContext();
 
   // id와 password 상태 관리
   const [id, setId] = useState(""); // email -> id로 변경 (백엔드가 id를 씀)
@@ -28,6 +30,7 @@ export default function LoginPage() {
     onSuccess: (response) => {
       console.log("로그인 성공");
       localStorage.setItem("accessToken", response.token);
+      setIsLogin(true);
       toast({
         title: "로그인 성공",
         description: "오늘의 일정으로 이동합니다.",
