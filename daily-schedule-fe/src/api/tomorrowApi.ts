@@ -29,7 +29,22 @@ export const getTodoSchedules = async (date: string) => {
     });
     return response.data;
   } catch (error) {
-    console.log("일정 가져오기 실패", error);
+    console.log("일정 목록 가져오기 실패", error);
+  }
+};
+
+/**
+ * 단일 일정 조회
+ * GET /api/schedules?id=3&date=YYYY-MM-DD
+ */
+export const getEachTodoSchedules = async (scheduleId: number, date: string) => {
+  try {
+    const response = await axiosInstance.get<TodoScheduleDTO[]>("/api/schedules", {
+      params: { scheduleId, date },
+    });
+    return response.data;
+  } catch (error) {
+    console.log("개별 일정 가져오기 실패", error);
   }
 };
 
@@ -50,14 +65,16 @@ export const postTodoSchedule = async (data: ScheduleData) => {
  * 일정 수정
  * PATCH /api/schedules?{scheduleId}
  */
-export const patchTodoSchedule = async (scheduleId: number) => {
+export const patchTodoSchedule = async (scheduleId: number, data: ScheduleData) => {
   try {
     const response = await axiosInstance.patch<string>(
-      `/api/schedules?${scheduleId}`
+      `/api/schedules?${scheduleId}`,
+      data
     );
     return response.data;
   } catch (error) {
     console.log("일정 수정 실패", error);
+    throw error;
   }
 };
 
