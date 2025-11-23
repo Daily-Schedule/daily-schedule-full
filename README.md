@@ -1,6 +1,17 @@
-# daily-schedule-full
+# 작심 1일 웹 서비스 (daily-schedule-full)
 
 우아한 테크코스 오픈미션 팀 프로젝트
+
+## 👥 팀 소개
+
+|                                 BE                                 |                                 BE                                 |                                 BE                                 |
+|:------------------------------------------------------------------:|:------------------------------------------------------------------:|:------------------------------------------------------------------:|
+| <img src="https://avatars.githubusercontent.com/ohwoong12" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/hi2242" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/202110861" width="150" height="150"> |
+| 권오웅 | 윤종근 | 윤미나 |
+| [@ohwoong12](https://github.com/ohwoong12) | [@hi2242](https://github.com/hi2242) | [@202110861](https://github.com/202110861) |
+| [권오웅의 개발 과정 보기](https://wiggly-dash-83a.notion.site/2b44a5e03d3380ae8316c4aaba5b5f6c?pvs=74) | [윤종근의 개발 과정 보기](https://wiggly-dash-83a.notion.site/2b44a5e03d3380318ad9eb0fce43bce3?pvs=74) | [윤미나의 개발 과정 보기](https://wiggly-dash-83a.notion.site/2b44a5e03d33809ab0edf5274601cda5?pvs=74) |
+
+
 
 ## 📍 목록
 
@@ -100,105 +111,6 @@
 
 ## 📖 API 명세
 
-### 1. (Create) 내일 할 일 등록
-
-- **Method:** `POST`
-- **URL:** `/api/schedules`
-- **Request Body:**
-
-  ```json
-  {
-    "startTime": "2025-11-14T20:30:00",
-    "endTime": "2025-11-14T21:00:00",
-    "content": "스프링 부트 API 만들기"
-  }
-  ```
-
-- **Success Response (201 CREATED):**
-
-  ```json
-  {
-    "id": 1,
-    "userId": "yoon2013",
-    "startTime": "2025-11-14T20:30:00",
-    "endTime": "2025-11-14T21:00:00",
-    "content": "스프링 부트 API 만들기",
-    "scheduleResultId": 1,
-    "createdAt": "2025-11-13T20:30:00",
-    "updatedAt": "2025-11-13T20:30:00"
-  }
-  ```
-
-### 2. (Read) 내일 할 일 목록 조회
-
-- **Method:** `GET`
-- **URL:** `/api/schedules`
-- **Query Parameters:**
-  - `userId` (필수): 조회할 사용자의 ID (예: `yoon2013`)
-  - `date` (필수): 조회할 날짜 (형식: `YYYY-MM-DD`, 예: `2025-11-14`)
-  - **예시 URL:** `/api/schedules?userId=yoon2013&date=2025-11-14`
-- **Request Body:** (없음)
-- **Success Response (200 OK):**
-
-  ```json
-  [
-    {
-      "id": 1,
-      "userId": "yoon2013",
-      "startTime": "2025-11-14T20:30:00",
-      "endTime": "2025-11-14T21:00:00",
-      "content": "스프링 부트 API 만들기",
-      "scheduleResultId": 1,
-      "createdAt": "2025-11-13T20:30:00",
-      "updatedAt": "2025-11-13T20:30:00"
-    },
-    {
-      "id": 2,
-      "userId": "yoon2025",
-      "startTime": "2025-11-14T21:30:00",
-      "endTime": "2025-11-14T22:00:00",
-      "content": "Docker로 MySQL 실행하기",
-      "scheduleResultId": 2,
-      "createdAt": "2025-11-13T20:35:00",
-      "updatedAt": "2025-11-13T20:35:00"
-    }
-  ]
-  ```
-
-### 3. (Update) 내일 할 일 수정
-
-- **Method:** `PATCH` (또는 `PUT`)
-- **URL:** `/api/schedules/{id}` (예: `/api/schedules/1`)
-- **Request Body:** (수정할 내용)
-
-  ```json
-  {
-    "startTime": "2025-11-14T20:30:00",
-    "endTime": "2025-11-14T21:00:00",
-    "content": "스프링 부트 API 테스트하기"
-  }
-  ```
-
-- **Success Response (200 OK):**
-
-  ```json
-  {
-    "id": 1,
-    "userId": "yoon2013",
-    "startTime": "2025-11-14T20:30:00",
-    "endTime": "2025-11-14T21:00:00",
-    "content": "스프링 부트 API 테스트하기",
-    "scheduleResultId": 1,
-    "createdAt": "2025-11-13T20:30:00",
-    "updatedAt": "2025-11-13T20:30:00"
-  }
-  ```
-
-### 4. (Delete) 내일 할 일 삭제
-
-- **Method:** `DELETE`
-- **URL:** `/api/schedules/{id}` (예: `/api/schedules/1`)
-- **Request Body:** (없음)
-- **Success Response (204 No Content):** (응답 본문 없음)
+### [postman API Documentation](https://documenter.getpostman.com/view/50179945/2sB3dHVt3t)
 
 ---
