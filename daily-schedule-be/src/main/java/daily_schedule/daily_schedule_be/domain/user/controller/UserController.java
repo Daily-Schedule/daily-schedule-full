@@ -38,9 +38,12 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody UserRequestDTO.Login login) {
         String token = userCommandService.login(login);
+        UserResponseDTO.UserInfo userInfo = userQueryService.getUserInfo(login.id());
+
         UserResponseDTO response = UserResponseDTO.builder()
                 .message("로그인 성공")
                 .token(token)
+                .userInfo(userInfo)
                 .build();
         return ResponseEntity.ok(response);
     }
