@@ -40,7 +40,7 @@ public class SchedulesController {
     }
 
     // 내일 할 일 가져오기 API
-    // (GET /api/schedules?userId=yoon2013&date=2025-11-14)
+    // (GET /api/schedules?&date=2025-11-14)
     @GetMapping
     public ResponseEntity<List<SchedulesResponseDto>> readSchedule(
             @RequestParam String date,
