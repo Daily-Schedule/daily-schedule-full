@@ -202,18 +202,3 @@
 - **Success Response (204 No Content):** (응답 본문 없음)
 
 ---
-
-## 📝 개발 체크리스트
-
-- [x] README 등록
-- [x] Docker로 MySQL 실행
-- [x] `application.yml` 설정 (JPA `ddl-auto: update` 설정)
-- [x] DTO 코드 작성 (Request/Response DTO)
-- [x] Entity 코드 작성
-- [x] Repository 코드 작성
-- [x] Service 코드 작성
-- [x] Controller 코드 작성
-- [x] Postman API 테스트 (CRUD 4개 기능 모두)
-- [x] 로그인 기능과 합병 후 로그인 계정 정보 이용 기능 추가
-- [ ] Postman Collection Export 및 공유
-- [ ] 프론트엔드 CORS 문제 해결 (`@CrossOrigin` 설정)
