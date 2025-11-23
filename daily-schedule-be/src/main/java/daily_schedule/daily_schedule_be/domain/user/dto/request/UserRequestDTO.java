@@ -22,7 +22,7 @@ public class UserRequestDTO {
             @NotBlank String id,
             @NotBlank String password
     ){
-        public CharSequence getPassword() {
+        public String getPassword() {
             return password;
         }
     }
