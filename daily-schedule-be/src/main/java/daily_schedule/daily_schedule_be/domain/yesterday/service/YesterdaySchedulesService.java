@@ -30,9 +30,8 @@ public class YesterdaySchedulesService {
     public YesterdaySchedulesResponseDto getDailyStatistics(String userId, String date) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
-        LocalDate localDate = LocalDate.parse(date);
-        LocalDateTime startOfDay = localDate.atStartOfDay();
-        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
+        LocalDateTime startOfDay = LocalDate.parse(date).atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.parse(date).atTime(LocalTime.MAX);
 
         // 해당 날짜의 모든 Schedule 조회
         List<Schedule> dailyTodos = schedulesRepository.findAllByUserAndStartTimeBetween(user, startOfDay, endOfDay);
@@ -40,39 +39,23 @@ public class YesterdaySchedulesService {
         // 데이터를 시간순으로 정렬 (계획 시작 시간 기준)
         dailyTodos.sort(Comparator.comparing(Schedule::getStartTime));
 
+        // 데이터가 하나도 없을 경우 빈 객체 반환
+        if (dailyTodos.isEmpty()) {
+            return new YesterdaySchedulesResponseDto(0, 0, new ArrayList<>(), new ArrayList<>());
+        }
+
         // 계산을 위한 변수 초기화
         long startDelayMinutes = 0;
         long totalDurationMinutes = 0;
         List<YesterdaySchedulesResponseDto.TaskDurationDto> taskDurations = new ArrayList<>();
         List<String> unfinishedTodoTitles = new ArrayList<>();
 
-        // 데이터가 하나도 없을 경우 빈 객체 반환
-        if (dailyTodos.isEmpty()) {
-            return new YesterdaySchedulesResponseDto(0, 0, taskDurations, unfinishedTodoTitles);
-        }
-
         // 첫 일정 시작 시각 비교 (계획 vs 실제)
         Schedule firstTodo = dailyTodos.getFirst();
         ScheduleResult firstResult = firstTodo.getScheduleResult();
 
         if (firstResult != null && firstResult.getRealStartTime() != null) {
-            Duration diff = Duration.between(firstTodo.getStartTime(), firstResult.getRealStartTime());
-            // 양수: 지각, 음수: 일찍 시작
-            startDelayMinutes = diff.toMinutes();
-        }
-
-        // 전체 일정 (마지막 종료 - 첫 일정 종료)
-        // 실제 종료 시간이 존재하는 일정만 필터링
-        List<Schedule> finishedTodos = dailyTodos.stream()
-                .filter(t -> t.getScheduleResult() != null && t.getScheduleResult().getRealEndTime() != null)
-                .sorted(Comparator.comparing(t -> t.getScheduleResult().getRealEndTime()))
-                .toList();
-
-        if (!finishedTodos.isEmpty()) {
-            LocalDateTime firstRealEndTime = finishedTodos.getFirst().getScheduleResult().getRealEndTime();
-            LocalDateTime lastRealEndTime = finishedTodos.getLast().getScheduleResult().getRealEndTime();
-
-            totalDurationMinutes = Duration.between(firstRealEndTime, lastRealEndTime).toMinutes();
+            startDelayMinutes = Duration.between(firstTodo.getStartTime(), firstResult.getRealStartTime()).toMinutes();
         }
 
         // 개별 일정 소요 시간 및 미완료 일정 리스트
@@ -85,13 +68,10 @@ public class YesterdaySchedulesService {
                 continue;
             }
 
-            // 개별 일정 시간 계산
-            long plannedDuration = Duration.between(todo.getStartTime(), todo.getEndTime()).toMinutes();
+            long plannedDuration = todo.calculatePlannedDuration();
+            long actualDuration = result.calculateRealDuration();
 
-            long actualDuration = 0;
-            if (result.getRealEndTime() != null) {
-                actualDuration = Duration.between(result.getRealStartTime(), result.getRealEndTime()).toMinutes();
-            }
+            totalDurationMinutes += actualDuration;
 
             taskDurations.add(new YesterdaySchedulesResponseDto.TaskDurationDto(
                     todo.getContent(),
