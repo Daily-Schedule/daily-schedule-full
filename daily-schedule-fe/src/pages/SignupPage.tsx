@@ -28,7 +28,7 @@ export default function SignupPage() {
     mutationFn: PostRegister,
     onSuccess: () => {
       console.log("회원가입 성공");
-      navigate("/login");
+      navigate("/");
     },
     onError: () => {
       console.error("회원가입에 실패했습니다.");
