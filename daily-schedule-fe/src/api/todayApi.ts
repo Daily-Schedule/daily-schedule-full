@@ -51,9 +51,13 @@ export const endSchedule = async (scheduleId: number) => {
 // 4. 하루 마감 API 호출
 export const finishToday = async (date: string) => {
   // POST 요청이지만 body가 없으므로 null 전달
-  const response = await axiosInstance.post(`/today-schedules/finish`, null, {
-    params: { date },
-  });
+  const response = await axiosInstance.post(
+    `/api/today-schedules/finish`,
+    null,
+    {
+      params: { date },
+    },
+  );
   return response.data;
 };
 
