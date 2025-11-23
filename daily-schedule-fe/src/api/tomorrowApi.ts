@@ -63,12 +63,12 @@ export const postTodoSchedule = async (data: ScheduleData) => {
 
 /**
  * 일정 수정
- * PATCH /api/schedules?{scheduleId}
+ * PATCH /api/schedules?id={scheduleId}
  */
 export const patchTodoSchedule = async (scheduleId: number, data: ScheduleData) => {
   try {
     const response = await axiosInstance.patch<string>(
-      `/api/schedules?${scheduleId}`,
+      `/api/schedules?id=${scheduleId}`,
       data
     );
     return response.data;
@@ -80,12 +80,12 @@ export const patchTodoSchedule = async (scheduleId: number, data: ScheduleData) 
 
 /**
  * 일정 삭제
- * DELETE /api/schedules?{scheduleId}
+ * DELETE /api/schedules?id={scheduleId}
  */
 export const deleteTodoSchedule = async (scheduleId: number) => {
   try {
     const response = await axiosInstance.delete<string>(
-      `/api/schedules?${scheduleId}`
+      `/api/schedules?id=${scheduleId}`
     );
     return response.data;
   } catch (error) {
