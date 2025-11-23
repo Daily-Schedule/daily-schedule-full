@@ -95,9 +95,9 @@ export function YesterdayAnalysis({ data }: Props) {
         </h3>
         <div className="grid gap-3">
           {data.taskDurations.map((task, index) => {
-            const diff = task.actualDurationMinutes - task.plannedDurationMinutes
-            const isOvertime = diff > 0
-            const isSaveTime = diff < 0
+            const diff = task.actualDurationMinutes - task.plannedDurationMinutes;
+            const isOvertime = diff > 0;
+            const isSaveTime = diff < 0;
             
             return (
               <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border bg-card gap-4">
@@ -118,7 +118,7 @@ export function YesterdayAnalysis({ data }: Props) {
                   {diff !== 0 && (
                     <span className={`text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap
                       ${isOvertime ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
-                      {isOvertime ? `+${diff}분 초과` : `${diff}분 단축`}
+                      {isOvertime ? `+${diff}분 초과` : `${Math.abs(diff)}분 단축`}
                     </span>
                   )}
                 </div>
