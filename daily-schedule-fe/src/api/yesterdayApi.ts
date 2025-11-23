@@ -1,5 +1,4 @@
-import { api } from "@/lib/axios";
-
+import { axiosInstance } from "./common/axiosInstance";
 // API 응답 데이터 타입 정의 (Service에서 넘겨주는 DTO와 일치)
 export interface TaskDurationDto {
   title: string;
@@ -18,7 +17,7 @@ export interface YesterdayResponseDto {
  * GET /api/yesterday?date=YYYY-MM-DD
  */
 export const getYesterdayStatistics = async (date: string) => {
-  const response = await api.get<YesterdayResponseDto>(`/api/yesterday`, {
+  const response = await axiosInstance.get<YesterdayResponseDto>(`/api/yesterday`, {
     // ?date=2025-11-21 형태로 변환
     params: { date },
   });
