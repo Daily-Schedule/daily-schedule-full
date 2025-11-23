@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import LoginPage from "./pages/LoginPage";
 import TodayPage from "./pages/TodayPage";
 import YesterdayPage from "./pages/YesterdayPage";
-import TomorrowPage from "./pages/tomorrowPage";
+import TomorrowPage from "./pages/TomorrowPage";
 import SignupPage from "./pages/SignupPage";
 import { useAuthContext } from "./context/AuthContext";
 import { AuthProvider } from "./context/AuthProvier";

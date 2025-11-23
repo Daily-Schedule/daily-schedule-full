@@ -120,8 +120,6 @@ public class SchedulesService {
         // scheduleResultRepository.deleteById(...)를 명시하지 않아도
         // schedulesRepository.delete(schedule)만 하면 결과 객체도 같이 삭제
         // 하지만 명시적으로 지우고 싶다면 아래처럼 ID를 꺼내야 함
-        Long resultId = schedule.getScheduleResult().getId();
-        scheduleResultRepository.deleteById(resultId);
 
         schedulesRepository.delete(schedule);
     }
